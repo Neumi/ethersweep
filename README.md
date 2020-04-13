@@ -1,2 +1,2 @@
 # ethersweep
-Ethernet Json motor controller based on open source and open hardware.
+Ethernet + UDP + Json motor controller. Based on open source soft- and hardware.
