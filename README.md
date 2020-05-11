@@ -2,6 +2,14 @@
 Ethernet + UDP + Json motor controller. Based on open source soft- and hardware.
 
 
+## How to get started:
+Connect ethersweep to your network via ethernet and to a 12v power source (Stepper motor driver works from 8-32v). 
+Wait for the LED to turn from blue to green. Blue indicates that ethersweep is searching for a DHCP server. Grenn means everything is normal and you're ready to go!
+
+Then open your routers (or DHCP servers) admin page and find out the IP adress of ethersweep (will change when a display is installed). 
+
+Change the IP in the python script and run it!
+
 
 ## ALL YOU NEED TO DRIVE A STEPPER MOTOR WITH PYTHON:
 
