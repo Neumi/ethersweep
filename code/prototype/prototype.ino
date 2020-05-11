@@ -31,7 +31,7 @@ static byte gwip[] = { 192, 168, 1, 1 };
 #endif
 
 // ethersweeps mac address has to be unique on local network
-static byte mymac[] = { 0x70, 0x69, 0x69, 0x2D, 0x30, 0x31 };
+static byte mymac[] = { 0x70, 0x69, 0x69, 0x2D, 0x30, 0x32 };
 
 byte Ethernet::buffer[500];
 String received_data = "0";
