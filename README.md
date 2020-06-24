@@ -10,6 +10,8 @@ Then open your routers (or DHCP servers) admin page and find out the IP adress o
 
 Change the IP in the python script and run it!
 
+![PCB raw B](/img/motor_gif.gif)
+
 
 ## ALL YOU NEED TO DRIVE A STEPPER MOTOR WITH PYTHON:
 
@@ -33,3 +35,4 @@ drive_motor(100, 9500, 1, 32, UDP_SEND_IP_MOTOR)
 
 ## Video:
 [![LINK TO VIDEO](https://img.youtube.com/vi/CZqzoTy67dk/0.jpg)](https://www.youtube.com/watch?v=CZqzoTy67dk)
+
