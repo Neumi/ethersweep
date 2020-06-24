@@ -30,3 +30,6 @@ def drive_motor(steps, speed, direction, stepmode, motor_ip):
 
 drive_motor(100, 9500, 1, 32, UDP_SEND_IP_MOTOR)
 ```
+
+## Video:
+[![LINK TO VIDEO](https://img.youtube.com/vi/CZqzoTy67dk/0.jpg)](https://www.youtube.com/watch?v=CZqzoTy67dk)
