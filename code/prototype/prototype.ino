@@ -3,6 +3,9 @@
 #include <ArduinoJson.h>
 #include <Adafruit_NeoPixel.h>
 #include <EEPROM.h>
+#include "SSD1306Ascii.h"
+#include "SSD1306AsciiAvrI2c.h"
+
 
 int stepPin = 6;
 int dirPin = 5;
@@ -22,16 +25,21 @@ int motorDirection = 0;
 int motorStepMode = 0;
 
 boolean jobDone = true;
+String ip_mode = "DHCP";
+
+#define I2C_ADDRESS 0x3C
+SSD1306AsciiAvrI2c oled;
 
 #define STATIC 0
 
 #if STATIC
+String ip_mode = "STATIC";
 static byte myip[] = { 192, 168, 1, 110 };
 static byte gwip[] = { 192, 168, 1, 1 };
 #endif
 
 // ethersweeps mac address has to be unique on local network
-static byte mymac[] = { 0x70, 0x69, 0x69, 0x2D, 0x30, 0x32 };
+static byte mymac[] = { 0x70, 0x69, 0x69, 0x2D, 0x30, 0x21 };
 
 byte Ethernet::buffer[500];
 String received_data = "0";
@@ -71,6 +79,7 @@ void setup() {
   drawState("init");
 
   Serial.println(F("\n[backSoon]"));
+  drawDisplay("unknown");
 
   pinMode(stepPin, OUTPUT);
   pinMode(dirPin, OUTPUT);
@@ -97,6 +106,7 @@ void setup() {
     Serial.println(F("DHCP failed"));
 #endif
 
+  drawDisplay(String(ether.myip[0]) + "." + String(ether.myip[1]) + "." + String(ether.myip[2]) + "." + String(ether.myip[3]));
   ether.printIp("IP:  ", ether.myip);
   ether.printIp("GW:  ", ether.gwip);
   ether.printIp("DNS: ", ether.dnsip);
@@ -213,4 +223,17 @@ void drawState(String state) {
     pixels.setPixelColor(0, pixels.Color(255, 255, 255));
   }
   pixels.show();
+}
+
+void drawDisplay(String ip) {
+  oled.begin(&Adafruit128x32, I2C_ADDRESS);
+  oled.setFont(Adafruit5x7);
+  oled.clear();
+  oled.set2X();
+  oled.println("ethersweep");
+  oled.set1X();
+  oled.print("Mode: ");
+  oled.println(ip_mode);
+  oled.print("IP: ");
+  oled.print(ip);
 }
