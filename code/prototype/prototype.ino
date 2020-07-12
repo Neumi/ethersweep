@@ -162,9 +162,9 @@ void driveMotor(int motorSteps, int motorSpeed, bool motorDirection, int motorSt
   motorSpeed = constrain(motorSpeed, 0, 10000);
   for (int i = 0; i <= motorSteps; i++) {
     digitalWrite(stepPin, LOW);
-    delayMicroseconds(10000 - motorSpeed);
+    delayMicroseconds(motorSpeed);
     digitalWrite(stepPin, HIGH);
-    delayMicroseconds(10000 - motorSpeed);
+    delayMicroseconds(motorSpeed);
   }
   drawState("ok");
 }
