@@ -11,7 +11,7 @@ In both situatiuons it is super important to give each ethersweep a unique MAC a
 '''
 
 
-UDP_SEND_IP_MOTOR = "192.168.1.185"  # ethersweep IP (depends on DHCP)
+UDP_SEND_IP_MOTOR = "192.168.1.169"  # ethersweep IP (depends on DHCP)
 UDP_SEND_PORT = 1337
 
 '''
@@ -28,4 +28,5 @@ def drive_motor(steps, speed, direction, stepmode, motor_ip):
     sock.sendto(message, (motor_ip, UDP_SEND_PORT))
 
 
-drive_motor(100, 9500, 1, 32, UDP_SEND_IP_MOTOR)
+drive_motor(2000, 9900, 1, 32, UDP_SEND_IP_MOTOR)
+drive_motor(2000, 9900, 0, 32, UDP_SEND_IP_MOTOR)
