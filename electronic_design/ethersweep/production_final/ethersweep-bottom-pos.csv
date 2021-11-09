@@ -1,0 +1,4 @@
+Ref,Val,Package,PosX,PosY,Rot,Side
+"M1","Stepper_Motor_bipolar","PinHeader_2x02_P2.54mm_Vertical_SMD",194.050000,-18.930000,180.000000,bottom
+"SW1","SW_Push","SW_Push_SPST_NO_Alps_SKRK",153.100000,-18.180000,180.000000,bottom
+"U5","AS5600","AS5600",194.050000,-33.630000,0.000000,bottom
