@@ -20,13 +20,12 @@ Now you can use the Python script to control the motor.
 
 (images to be updated)
 
-![PCB Photo](/images/prototype201.jpg)
-![PCB raw B](/images/animation.gif)
-![PCB raw B](/images/3d_board_front.png)
-![PCB raw B](/images/3d_board_back.png)
-![PCB raw B](/images/board.png)
-![PCB raw B](/images/ethersweep2_1.jpg)
-![PCB raw B](/images/ethersweep2_2.jpg)
+![PCB Photo](/img/animation.gif)
+![PCB raw B](/img/layout303.png)
+![PCB raw B](/img/prototype201.jpg)
+![PCB raw B](/img/side303.png)
+![PCB raw B](/img/top303.png)
+![PCB raw B](/img/back303.png)
 
 ## Using Python to controll a stepper motor:
 
