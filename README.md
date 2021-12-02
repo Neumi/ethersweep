@@ -28,7 +28,7 @@ Now you can use the Python script to control the motor.
 ![PCB raw B](/img/top303.png)
 ![PCB raw B](/img/back303.png)
 
-## Using Python to controll a stepper motor:
+## Using Python to control a stepper motor:
 
 ```python
 import socket
@@ -49,5 +49,5 @@ drive_motor(100, 9500, 1, 32, IP_MOTOR)
 ```
 
 ## Video:
-[![LINK TO VIDEO](https://img.youtube.com/vi/CZqzoTy67dk/0.jpg)](https://www.youtube.com/watch?v=CZqzoTy67dk)
+[![LINK TO VIDEO](https://img.youtube.com/vi/JtqH8TxggIc/0.jpg)](https://www.youtube.com/watch?v=JtqH8TxggIc)
 
