@@ -62,7 +62,7 @@ IPAddress ip(192, 168, 1, 178);
 unsigned int localPort = 8888;      // local port to listen on
 
 // buffers for receiving and sending data
-char packetBuffer[64];  // buffer to hold incoming packet,
+char packetBuffer[96];  // buffer to hold incoming packet,
 
 // An EthernetUDP instance to let us send and receive packets over UDP
 EthernetUDP Udp;
@@ -152,7 +152,7 @@ void loop() {
     // Serial.println(Udp.remotePort());
 
     // read the packet into packetBufffer
-    Udp.read(packetBuffer, 64);
+    Udp.read(packetBuffer, 96);
     // Serial.println("Contents:");
     // Serial.println(packetBuffer);
 

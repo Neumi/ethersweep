@@ -621,23 +621,6 @@ STEPPER_ENABLE
 Wire Wire Line
 	12600 6900 12350 6900
 $Comp
-L Motor:Stepper_Motor_bipolar M1
-U 1 1 611E7EF6
-P 14750 7400
-F 0 "M1" H 14938 7524 50  0000 L CNN
-F 1 "Stepper_Motor_bipolar" H 14938 7433 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x02_P2.54mm_Vertical_SMD" H 14760 7390 50  0001 C CNN
-F 3 "http://www.infineon.com/dgdl/Application-Note-TLE8110EE_driving_UniPolarStepperMotor_V1.1.pdf?fileId=db3a30431be39b97011be5d0aa0a00b0" H 14760 7390 50  0001 C CNN
-	1    14750 7400
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	14400 7400 14400 7300
-Wire Wire Line
-	14400 7300 14450 7300
-Wire Wire Line
-	14750 7100 14850 7100
-$Comp
 L Device:C C18
 U 1 1 6136E3CF
 P 14650 7700
@@ -2573,16 +2556,6 @@ F 3 "" H 14100 8200 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	14000 8200 14100 8200
-Wire Wire Line
-	14000 7100 14650 7100
-Wire Wire Line
-	14000 7200 14750 7200
-Wire Wire Line
-	14750 7100 14750 7200
-Wire Wire Line
-	14000 7400 14400 7400
-Wire Wire Line
-	14000 7500 14450 7500
 $Comp
 L Device:R R12
 U 1 1 6135EE4E
@@ -3149,20 +3122,6 @@ Wire Wire Line
 Connection ~ 12400 4500
 Wire Wire Line
 	12400 4500 13000 4500
-$Comp
-L B4B-XH-A_LF__SN_:B4B-XH-A(LF)(SN) J11
-U 1 1 622C08A7
-P 14400 2500
-F 0 "J11" H 14507 2967 50  0000 C CNN
-F 1 "B4B-XH-A(LF)(SN)" H 14507 2876 50  0000 C CNN
-F 2 "modules:JST_B4B-XH-A(LF)(SN)" H 14400 2500 50  0001 L BNN
-F 3 "" H 14400 2500 50  0001 L BNN
-F 4 "Manufacturer Recommendation" H 14400 2500 50  0001 L BNN "STANDARD"
-F 5 "NA" H 14400 2500 50  0001 L BNN "PARTREV"
-F 6 "JST Sales America Inc" H 14400 2500 50  0001 L BNN "MANUFACTURER"
-	1    14400 2500
-	1    0    0    -1  
-$EndComp
 Wire Notes Line
 	15750 9650 11250 9650
 Wire Notes Line
@@ -3223,4 +3182,39 @@ F 3 "" H 7300 9600 50  0001 C CNN
 	1    7300 9600
 	0    -1   -1   0   
 $EndComp
+$Comp
+L Connector:Conn_01x04_Male J11
+U 1 1 61920619
+P 14700 7300
+F 0 "J11" H 14808 7581 50  0000 C CNN
+F 1 "Conn_01x04_Male" H 14808 7490 50  0000 C CNN
+F 2 "Connector_JST:JST_EH_S4B-EH_1x04_P2.50mm_Horizontal" H 14700 7300 50  0001 C CNN
+F 3 "~" H 14700 7300 50  0001 C CNN
+	1    14700 7300
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	14000 7100 14250 7100
+Wire Wire Line
+	14250 7100 14250 7200
+Wire Wire Line
+	14250 7200 14500 7200
+Wire Wire Line
+	14350 7100 14350 7400
+Wire Wire Line
+	14350 7400 14000 7400
+Wire Wire Line
+	14350 7100 14500 7100
+Wire Wire Line
+	14000 7200 14100 7200
+Wire Wire Line
+	14100 7200 14100 7300
+Wire Wire Line
+	14100 7300 14500 7300
+Wire Wire Line
+	14500 7400 14400 7400
+Wire Wire Line
+	14400 7400 14400 7500
+Wire Wire Line
+	14400 7500 14000 7500
 $EndSCHEMATC
