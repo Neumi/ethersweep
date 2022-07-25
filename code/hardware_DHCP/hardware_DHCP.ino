@@ -1,3 +1,4 @@
+// FOR HARDWARE 3.0.3 and 3.0.4
 #include <Ethernet.h>
 #include <EthernetUdp.h>
 #include <IPAddress.h>
@@ -46,8 +47,15 @@ boolean eStopActiveLast = false;
 boolean endStopPressedLast = false;
 boolean jobDoneLast = true;
 
+float voltage = 0.0;
+float encoderAngle = 0.0;
+
+float voltageLast = 0.0;
+float encoderAngleLast = 0.0;
 
 
+unsigned long previousMillis = 0;
+const long sensorRefresh = 100;
 
 #define I2C_ADDRESS 0x3C
 SSD1306AsciiAvrI2c oled;
@@ -73,7 +81,7 @@ IPAddress ip(192, 168, 1, 111);
 
 
 unsigned int localPort = 8888;      // local port to listen on
-// unsigned int remotePort = 8889;
+unsigned int remotePort = 8889;
 
 // buffers for receiving and sending data
 
@@ -86,7 +94,8 @@ EthernetUDP Udp;
 String received_data = "0";
 
 static uint32_t timer;
-unsigned long previousMillis = 0;
+
+unsigned long currentMillis;
 
 void setup() {
   Serial.begin(9600);
@@ -137,13 +146,13 @@ void setup() {
   Ethernet.begin(mac, ip);
   // Check for Ethernet hardware present
   if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-    // Serial.println("Ethernet hardware not found. Critical ERROR");
+    Serial.println("Ethernet hardware not found. Critical ERROR");
     while (true) {
       delay(1); // do nothing, no point running without Ethernet hardware
     }
   }
   if (Ethernet.linkStatus() == LinkOFF) {
-    // Serial.println("Ethernet cable is not connected.");
+    Serial.println("Ethernet cable is not connected.");
   }
 #else
   if (Ethernet.begin(mac) == 0) {
@@ -170,14 +179,14 @@ void setup() {
   // Serial.println(ip);
   // drawDisplay();
   Udp.begin(localPort);
-  delay(500);
+
   Serial.println("ok");
   initializeDisplay();
 }
 
 void loop() {
   getButtonStates();
-  
+
   int packetSize = Udp.parsePacket();
   if (packetSize) {
     // Serial.print("Received packet of size ");
@@ -192,17 +201,20 @@ void loop() {
     // Serial.println("Contents:");
     // Serial.println(packetBuffer);
 
+    /*
+    // reply receive message 
     // send a reply to the IP address and port that sent us the packet we received
-    //Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
-    //Udp.write(ReplyBuffer);
-    //Udp.endPacket();
+    Udp.beginPacket(Udp.remoteIP(), remotePort);
+    Udp.write(packetBuffer);
+    Udp.endPacket();
+    */
 
     jobDone = false;
 
   }
   else {
-    unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis >= 100) {
+    currentMillis = millis();
+    if (currentMillis - previousMillis >= sensorRefresh) {
       drawDisplay(); // time killer!
       previousMillis = currentMillis;
     }
@@ -236,8 +248,8 @@ void loop() {
     motorDirection = raw_direction.toInt();
     motorStepMode = raw_step_mode.toInt();
     motorHold = raw_hold.toInt();
-    
-    
+
+
     switch (driveMode) {
       case 0:
         driveMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
@@ -381,16 +393,19 @@ void initializeDisplay() {
 
 void drawDisplay() {
   getButtonStates();
+  encoderAngle = getEncoderAngle();
+  voltage = getVoltage();
 
-  oled.setInvertMode(0);
-  float voltage = getVoltage();
-  oled.clearField(0, 1, 3);
-  //if (voltage < 10.0) oled.print("");
-  oled.print(getVoltage(), 1);
+  if (voltage != voltageLast ) {
+    oled.clearField(0, 1, 3);
+    //if (voltage < 10.0) oled.print("");
+    oled.print(voltage, 1);
+  }
 
-  oled.clearField(90, 1, 3);
-
-  oled.print(getEncoderAngle(), 1);
+  if (encoderAngle != encoderAngleLast ) {
+    oled.clearField(90, 1, 3);
+    oled.print(encoderAngle, 1);
+  }
 
   if (endStopPressed != endStopPressedLast) {
     oled.clearField(0, 2, 4);
@@ -402,20 +417,22 @@ void drawDisplay() {
     oled.clearField(47, 2, 4);
     if (eStopActive) oled.setInvertMode(1);
     oled.print("STOP");
+    oled.setInvertMode(0);
   }
 
   if (jobDone != jobDoneLast) {
     oled.clearField(96, 2, 4);
     if (!jobDone) oled.setInvertMode(1);
     oled.print("ACT");
+    oled.setInvertMode(0);
   }
 
+  voltageLast = voltage;
+  encoderAngleLast = encoderAngle;
   endStopPressedLast = endStopPressed;
   eStopActiveLast = eStopActive;
   jobDoneLast = jobDone;
 }
-
-
 
 float getVoltage() {
   float vin = (analogRead(A6) * 3.3) / 1024.0 / (1000.0 / (10000.0 + 1000.0)) ;
@@ -432,12 +449,11 @@ String displayAddress(IPAddress address)
 
 float getEncoderAngle() {
   float normalAngle;
-  float rawAngle = ams5600.getRawAngle() - 32768.0;
+  float rawAngle = ams5600.getRawAngle();
   /* Raw data reports 0 - 4095 segments, which is 0.087 of a degree */
   normalAngle = rawAngle * 0.087;
   return normalAngle;
 }
-
 
 void getButtonStates() {
   endStopPressed = !digitalRead(endStopPin); // END Stop pressed
