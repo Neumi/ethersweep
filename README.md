@@ -1,4 +1,16 @@
-# ethersweep3
+# Ethersweep
+### An Ethernet controllable stepper motor. Easy interfacing with JSON and UDP from any device on the network in any language you choose.
+
+## What it does
+Ethersweep offers easy interfacing from computers/machines/backends to control motion. Every language that supports UDP is able to communicate and control as many motors (on your network) as you like.
+
+## What it needs
+Every motor has to be connected to an Ethernet network and to a power supply from 5.5V to 30V.
+
+## How to control
+
+
+
 
 The third version of ethersweep. Now with W5500 ethernet controller, Trinamic TMC2208 stepper motor driver, improved high frequency circuitry, XT30 connector and many more improvements.
 
