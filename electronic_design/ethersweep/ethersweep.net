@@ -1,7 +1,7 @@
 (export (version D)
   (design
-    (source /Users/jan/projects/ethersweep/electronic_design/ethersweep/ethersweep.sch)
-    (date "2021 November 10, Wednesday 20:18:09")
+    (source /Users/jan/projects/ethersweep/electronic_design/ethersweep_motor_connector/ethersweep.sch)
+    (date "2021 November 11, Thursday 16:51:24")
     (tool "Eeschema (5.1.8-0-10_14)")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -705,8 +705,10 @@
       (tstamp 6135EE4E))
     (comp (ref RV1)
       (value R_POT_20K)
-      (footprint Potentiometer_THT:Potentiometer_Bourns_3296W_Vertical)
+      (footprint Potentiometer_SMD:Potentiometer_Bourns_TC33X_Vertical)
       (datasheet ~)
+      (fields
+        (field (name LCSC) C719177))
       (libsource (lib Device) (part R_POT) (description Potentiometer))
       (sheetpath (names /) (tstamps /))
       (tstamp 6143DF07))
