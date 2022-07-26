@@ -1,7 +1,7 @@
 # Ethersweep
 ### An Open Source Ethernet controllable stepper motor. Easy interfacing with JSON and UDP from any device on the network in any language you choose.
 
-<img alt="linear axis" src="/img/linear_axis.jpg" width="50%">
+<img alt="linear axis" src="/img/linear_axis.png">
 
 
 ## What it does
@@ -9,9 +9,7 @@ Ethersweep offers easy interfacing from computers/machines/backends to motion co
 
 It gets an IP address from a DHCP server and shows data like IP, operating voltage, button and operation states on the OLED display.
 
-<img alt="Display content" src="/img/display.png" width="50%">
-
-<img alt="PCB Photo" src="/img/3d_side.png" width="50%">
+<img alt="PCB Photo" src="/img/3d_side.png">
 
 
 
@@ -37,6 +35,9 @@ Every motor has to be connected to an Ethernet network (optimally with DHCP) and
 - Fits on a NEMA17 stepper motor
 
 
+<img alt="Display content" src="/img/display.png" width="50%">
+
+
 ## How to get started:
 Build an (or multiple) Ethersweep controller. All manufacturing/assembly files work with JLCPCB and only some easy THT soldering and programming when the boards arrive. 
 
@@ -51,6 +52,8 @@ Now you can use the Python script to control the motor.
 ![animation](/img/animation.gif)
 ![cad 2](/img/cad2.png)
 ![pcb layout](/img/pcb_layout.png)
+
+![pcb layout](/img/component_overview.png)
 
 ## Using Python to control a stepper motor:
 
