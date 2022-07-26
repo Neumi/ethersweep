@@ -394,7 +394,7 @@
       "idf": "ethersweep.emn",
       "netlist": "ethersweep.net",
       "specctra_dsn": "../../../../Desktop/ethersweep.dsn",
-      "step": "../../../../Desktop/ethersweep_sep_2.STEP",
+      "step": "../../../../Desktop/ethersweep_bottom.STEP",
       "vrml": "ethersweep.wrl"
     },
     "page_layout_descr_file": ""
