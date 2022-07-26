@@ -2,10 +2,10 @@
 ### An Ethernet controllable stepper motor. Easy interfacing with JSON and UDP from any device on the network in any language you choose.
 
 ## What it does
-Ethersweep offers easy interfacing from computers/machines/backends to control motion. Every language that supports UDP is able to communicate and control as many motors (on your network) as you like.
+Ethersweep offers easy interfacing from computers/machines/backends to motion control. Every UDP supporting language is able to communicate with it and is able to control as many motors (on your network) as you like. I gets an IP address from a DHCP server and shows data like IP, operating voltage, button and operation states on the OLED display.
 
 ## What it needs
-Every motor has to be connected to an Ethernet network and to a power supply from 5.5V to 30V.
+Every motor has to be connected to an Ethernet network (optimally with DHCP) and to a power supply from 5.5V to 30V.
 
 ## How to control
 
