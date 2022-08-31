@@ -61,7 +61,7 @@ const long sensorRefresh = 100;
 SSD1306AsciiAvrI2c oled;
 
 
-#define STATIC 0
+
 
 #define DEBUG  //comment line to disable debugging mode
 
@@ -75,12 +75,13 @@ SSD1306AsciiAvrI2c oled;
 #define debugPrintln(...)
 #endif
 
+#define STATIC 0
 #if STATIC
-String ip_mode = "STATIC";
-static byte myip[] = { 192, 168, 1, 111 };
-static byte gwip[] = { 192, 168, 1, 1 };
+static String ip_mode = "STATIC";
+IPAddress ip(192, 168, 2, 111); // static IP
 #else
-String ip_mode = "DHCP";
+static String ip_mode = "DHCP";
+IPAddress ip(0, 0, 0, 0);
 #endif
 
 
@@ -88,7 +89,7 @@ String ip_mode = "DHCP";
 byte mac[] = {
   0xDE, 0xAD, 0xBC, 0xEA, 0xFE, 0xEE
 };
-IPAddress ip(192, 168, 1, 111);
+
 
 
 unsigned int localPort = 8888;      // local port to listen on
