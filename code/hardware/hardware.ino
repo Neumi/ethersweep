@@ -77,7 +77,7 @@ SSD1306AsciiAvrI2c oled;
 
 #define STATIC 0
 #if STATIC
-static String ip_mode = "STATIC";
+static String ip_mode = "STAT";
 IPAddress ip(192, 168, 2, 111); // static IP
 #else
 static String ip_mode = "DHCP";
@@ -396,7 +396,7 @@ void initializeDisplay() {
   oled.setFont(System5x7);
   oled.clear();
   oled.println("ethersweep    v3.0.4");
-  oled.println("00.0V | DHCP | 000.0°");
+  oled.println("00.0V | " + ip_mode + " | 000.0°");
   oled.println("END   | STOP |  ACT");
   oled.println("IP: " + displayAddress(Ethernet.localIP()));
   // rows = oled.fontRows();
