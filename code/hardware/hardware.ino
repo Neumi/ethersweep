@@ -62,7 +62,18 @@ SSD1306AsciiAvrI2c oled;
 
 
 #define STATIC 0
-#define DEBUG 1
+
+#define DEBUG  //comment line to disable debugging mode
+
+#ifdef DEBUG
+#define debugBegin(...) Serial.begin(__VA_ARGS__)
+#define debugPrint(...) Serial.print(__VA_ARGS__)
+#define debugPrintln(...) Serial.println(__VA_ARGS__)
+#else
+#define debugBegin(...)
+#define debugPrint(...)
+#define debugPrintln(...)
+#endif
 
 #if STATIC
 String ip_mode = "STATIC";
@@ -98,8 +109,8 @@ static uint32_t timer;
 unsigned long currentMillis;
 
 void setup() {
-  Serial.begin(9600);
-  Serial.print("initializing...");
+  debugBegin(9600);
+  debugPrintln("initializing...");
   pinMode(stepPin, OUTPUT);
   pinMode(dirPin, OUTPUT);
   pinMode(enablePin, OUTPUT);
@@ -127,7 +138,7 @@ void setup() {
         break;
       }
       else {
-        Serial.println("magnet err");
+        debugPrintln("magnet err");
       }
       delay(1000);
     }
@@ -146,41 +157,41 @@ void setup() {
   Ethernet.begin(mac, ip);
   // Check for Ethernet hardware present
   if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-    Serial.println("Ethernet hardware not found. Critical ERROR");
+    debugPrintln("Ethernet hardware not found. Critical ERROR");
     while (true) {
       delay(1); // do nothing, no point running without Ethernet hardware
     }
   }
   if (Ethernet.linkStatus() == LinkOFF) {
-    Serial.println("Ethernet cable is not connected.");
+    debugPrintln("Ethernet cable is not connected.");
   }
 #else
   if (Ethernet.begin(mac) == 0) {
-    Serial.println("DHCP error");
+    debugPrintln("DHCP error");
     // Check for Ethernet hardware present
     if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-      Serial.println("eth hardware err");
+      debugPrintln("eth hardware err");
       while (true) {
         delay(1); // do nothing, no point running without Ethernet hardware
       }
     }
     if (Ethernet.linkStatus() == LinkOFF) {
-      Serial.println("eth cable err");
+      debugPrintln("eth cable err");
     }
     // try to congifure using IP address instead of DHCP:
     Ethernet.begin(mac, ip);
   } else {
-    Serial.print("DHCP ok: ");
-    Serial.println(Ethernet.localIP());
+    debugPrint("DHCP ok: ");
+    debugPrintln(Ethernet.localIP());
   }
 #endif
 
   // start UDP
-  // Serial.println(ip);
+  debugPrintln(ip);
   // drawDisplay();
   Udp.begin(localPort);
 
-  Serial.println("ok");
+  debugPrintln("ok");
   initializeDisplay();
 }
 
@@ -189,24 +200,24 @@ void loop() {
 
   int packetSize = Udp.parsePacket();
   if (packetSize) {
-    // Serial.print("Received packet of size ");
-    // Serial.println(packetSize);
-    // Serial.print("From ");
+    debugPrint("Received packet of size ");
+    debugPrintln(packetSize);
+    debugPrint("From ");
     IPAddress remote = Udp.remoteIP();
-    // Serial.print(", port ");
-    // Serial.println(Udp.remotePort());
+    debugPrint(", port ");
+    debugPrintln(Udp.remotePort());
 
     // read the packet into packetBufffer
     Udp.read(packetBuffer, packetBufferSize);
-    // Serial.println("Contents:");
-    // Serial.println(packetBuffer);
+    debugPrintln("Contents:");
+    debugPrintln(packetBuffer);
 
     /*
-    // reply receive message 
-    // send a reply to the IP address and port that sent us the packet we received
-    Udp.beginPacket(Udp.remoteIP(), remotePort);
-    Udp.write(packetBuffer);
-    Udp.endPacket();
+      // reply receive message
+      // send a reply to the IP address and port that sent us the packet we received
+      Udp.beginPacket(Udp.remoteIP(), remotePort);
+      Udp.write(packetBuffer);
+      Udp.endPacket();
     */
 
     jobDone = false;
@@ -253,11 +264,11 @@ void loop() {
     switch (driveMode) {
       case 0:
         driveMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
-        // Serial.println("motor driven");
+        debugPrintln("motor driven");
         break;
       case 1:
         homeMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
-        // Serial.println("motor homed");
+        debugPrintln("motor homed");
         break;
     }
 
