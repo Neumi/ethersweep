@@ -39,10 +39,10 @@ Every motor has to be connected to an Ethernet network (optimally with DHCP) and
 
 
 ## How to get started:
-Build an (or multiple) Ethersweep controller. All manufacturing/assembly files work with JLCPCB and only some easy THT soldering and programming when the boards arrive. 
+Build an (or multiple) Ethersweep controller. All manufacturing/assembly files work with JLCPCB and only some easy THT soldering + ICSP programming when the boards arrive. Arduino code is available in repository.
 
-Connect ethersweep to your network via ethernet and to a +12v power source.
-Once connected it serarches for an IP address on the network using DHCP. When an IP is found, the controller shows it on the display and its ready to use.
+Connect your Ethersweep controller to your network via ethernet and connect to a 5.5...30V power source. Stick an encoder magnet (radial magnetized) on a NEMA17 motor shaft and connect the controller to the four M3 screws of the motor.
+Once connected to power and Ethernet, it serarches for an IP address using DHCP. When an IP is found, the controller shows it on the display and its ready to use. When no IP is found, it defaults to 192.168.1.111.
 
 Now you can use the Python script to control the motor.
 
@@ -78,3 +78,9 @@ drive_motor(100, 9500, 1, 32, IP_MOTOR)
 ## Video:
 [![LINK TO VIDEO](https://img.youtube.com/vi/JtqH8TxggIc/0.jpg)](https://www.youtube.com/watch?v=JtqH8TxggIc)
 
+
+
+## Upcoming Features:
+- automatic MAC address generation at first start + EEPROM storage
+- USB interface
+- improved Broadcast mode + motor synchronization for multiple motors
