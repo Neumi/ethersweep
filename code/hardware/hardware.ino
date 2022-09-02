@@ -59,7 +59,7 @@ float encoderAngleLast = 0.0;
 unsigned long previousMillis = 0;
 const long sensorRefresh = 100;
 
-const byte macEepromStartAddress = 0;
+const byte macEepromStartAddress = 1; // has to be one, because first MAC address element is not to be changed
 const byte macEepromEndAddress = 5;
 boolean macUnwritten = true;
 
@@ -90,15 +90,12 @@ static String ip_mode = "DHCP";
 IPAddress ip(0, 0, 0, 0);
 #endif
 
-/*
-byte mac[] = {
-  0xDE, 0xAD, 0xBC, 0xEA, 0xFE, 0xEE
-};
-*/
+
 
 byte mac[] = {
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+  0xDE, 0x00, 0x00, 0x00, 0x00, 0x00 // first element is not to be changed
 };
+
 
 unsigned int localPort = 8888;      // local port to listen on
 unsigned int remotePort = 8889;
@@ -132,12 +129,12 @@ void setup() {
   pinMode(diagPin, INPUT);
   pinMode(endStopPin, INPUT);
   pinMode(eStopPin, INPUT);
-
+  
   digitalWrite(dirPin, LOW);
-  
+
   randomSeed(analogRead(randomSeedPin));
-  
   getMac();
+
   oled.begin(&Adafruit128x32, I2C_ADDRESS);
   oled.setFont(Adafruit5x7);
   oled.clear();
@@ -161,8 +158,6 @@ void setup() {
   // digitalWrite(resetPin, HIGH);
   disableMotor();
   // setStepMode(2);
-
-
 
 #if STATIC
   Ethernet.begin(mac, ip);
@@ -397,7 +392,7 @@ void setupDisplay() {
   oled.println("ethersweep");
   oled.set1X();
   oled.println(" ");
-  oled.println("       v3.0.4");
+  oled.println("       v3.0.6");
   // rows = oled.fontRows();
 }
 
@@ -405,7 +400,7 @@ void setupDisplay() {
 void initializeDisplay() {
   oled.setFont(System5x7);
   oled.clear();
-  oled.println("ethersweep    v3.0.4");
+  oled.println("ethersweep    v3.0.6");
   oled.println("00.0V | " + ip_mode + " | 000.0°");
   oled.println("END   | STOP |  ACT");
   oled.println("IP: " + displayAddress(Ethernet.localIP()));
@@ -483,44 +478,34 @@ void getButtonStates() {
 }
 
 void getMac() {
-  if(checkMacAddress()) {
+  if (checkMacAddress()) {
     generateNewMacEeprom();
   }
-  checkMacAddress();
-  
-  Serial.print("MAC:");
-  for (int i = 0; i <= 5; i++) {
-    Serial.print(mac[i]);
-    Serial.print(",");
-  }
-  Serial.println();
-  Serial.println("done");
-
 }
 
 boolean checkMacAddress() {
-  for (int i = 0; i <= 5; i++) {
-    int EEPROMvalue = EEPROM.read(i);
+  for (int i = 1; i <= 5; i++) {
+    byte EEPROMvalue = EEPROM.read(i);
     mac[i] = EEPROMvalue;
     if (EEPROMvalue != 255) {
       macUnwritten = false;
     }
   }
-  
+
   return macUnwritten;
 }
 
 void clearEeprom() {
-  for (int i = 0; i <= 5; i++) {
+  for (int i = 1; i <= 5; i++) {
     EEPROM.write(i, 255);
   }
 
   macUnwritten = true;
-  Serial.println("EEPROM cleared");
+  debugPrintln("EEPROM cleared");
 }
 
 void generateNewMacEeprom() {
-  for (int i = 0; i <= 5; i++) {
+  for (int i = 1; i <= 5; i++) {
     EEPROM.write(i, random(255));
   }
 }
