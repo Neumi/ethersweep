@@ -14,12 +14,12 @@
 
 AMS_5600 ams5600;
 
-
+// motor driver
 const int stepPin = 7;
 const int dirPin = 6;
 const int enablePin = 5;
-//const  int sleepPin = 8;
-//const  int resetPin = 9;
+// const  int sleepPin = 8; // ethernet INT
+// const  int resetPin = 9; // ethernet RST
 
 const int m0Pin = A1;
 const int m1Pin = A0;
@@ -120,8 +120,10 @@ void setup() {
   pinMode(stepPin, OUTPUT);
   pinMode(dirPin, OUTPUT);
   pinMode(enablePin, OUTPUT);
+
   // pinMode(sleepPin, OUTPUT);
   // pinMode(resetPin, OUTPUT);
+
   pinMode(m0Pin, OUTPUT);
   pinMode(m1Pin, OUTPUT);
   pinMode(ledPin, OUTPUT);
@@ -129,7 +131,7 @@ void setup() {
   pinMode(diagPin, INPUT);
   pinMode(endStopPin, INPUT);
   pinMode(eStopPin, INPUT);
-  
+
   digitalWrite(dirPin, LOW);
 
   randomSeed(analogRead(randomSeedPin));
@@ -154,8 +156,8 @@ void setup() {
 
   // drawDisplay();
 
-  // digitalWrite(sleepPin, HIGH);
-  // digitalWrite(resetPin, HIGH);
+  //digitalWrite(sleepPin, HIGH);
+  //digitalWrite(resetPin, HIGH);
   disableMotor();
   // setStepMode(2);
 
@@ -276,8 +278,12 @@ void loop() {
         homeMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
         debugPrintln("motor homed");
         break;
-    }
 
+      case 4: // power cycle
+        powerCycleMotor();
+        break;
+
+    }
 
     jobDone = true;
   }
@@ -332,9 +338,20 @@ void driveMotor(int motorSteps, int motorSpeed, bool motorDirection, int motorSt
   digitalWrite(ledPin, LOW);
 }
 
+void powerCycleMotor() {
+  debugPrintln("MOTOR ERROR STATE: ");
+  debugPrint(checkMotorDriverFailure());
+  disableMotor();
+  delay(50);
+  enableMotor();
+  delay(50);
+  debugPrintln("MOTOR ERROR STATE: ");
+  debugPrint(checkMotorDriverFailure());
+}
+
 
 void setStepMode(int mode) {
-  // sets DRV8825 step modes: full step to 1/32 step mode
+  // sets TMC2208 step modes: full step to 1/32 step mode
   switch (mode) {
     // MS2, MS1: 00: 1/8, 11: 1/16
     case 2:
