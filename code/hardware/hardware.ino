@@ -8,6 +8,7 @@
 #include "SSD1306AsciiAvrI2c.h"
 #include <Wire.h>
 #include <AS5600.h>
+#include <EEPROM.h>
 
 #define SYS_VOL   3.3
 
@@ -28,6 +29,7 @@ const int voltDetectPin = A6;
 const int endStopPin = 3;
 const int eStopPin = 4;
 const int ledPin = 2;
+const int randomSeedPin = A7;
 
 int driveMode = 0;
 int motorSpeed = 0;
@@ -57,6 +59,10 @@ float encoderAngleLast = 0.0;
 unsigned long previousMillis = 0;
 const long sensorRefresh = 100;
 
+const byte macEepromStartAddress = 0;
+const byte macEepromEndAddress = 5;
+boolean macUnwritten = true;
+
 #define I2C_ADDRESS 0x3C
 SSD1306AsciiAvrI2c oled;
 
@@ -84,13 +90,15 @@ static String ip_mode = "DHCP";
 IPAddress ip(0, 0, 0, 0);
 #endif
 
-
-
+/*
 byte mac[] = {
   0xDE, 0xAD, 0xBC, 0xEA, 0xFE, 0xEE
 };
+*/
 
-
+byte mac[] = {
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+};
 
 unsigned int localPort = 8888;      // local port to listen on
 unsigned int remotePort = 8889;
@@ -126,8 +134,10 @@ void setup() {
   pinMode(eStopPin, INPUT);
 
   digitalWrite(dirPin, LOW);
-
-
+  
+  randomSeed(analogRead(randomSeedPin));
+  
+  getMac();
   oled.begin(&Adafruit128x32, I2C_ADDRESS);
   oled.setFont(Adafruit5x7);
   oled.clear();
@@ -470,4 +480,47 @@ float getEncoderAngle() {
 void getButtonStates() {
   endStopPressed = !digitalRead(endStopPin); // END Stop pressed
   eStopActive = !digitalRead(eStopPin);
+}
+
+void getMac() {
+  if(checkMacAddress()) {
+    generateNewMacEeprom();
+  }
+  checkMacAddress();
+  
+  Serial.print("MAC:");
+  for (int i = 0; i <= 5; i++) {
+    Serial.print(mac[i]);
+    Serial.print(",");
+  }
+  Serial.println();
+  Serial.println("done");
+
+}
+
+boolean checkMacAddress() {
+  for (int i = 0; i <= 5; i++) {
+    int EEPROMvalue = EEPROM.read(i);
+    mac[i] = EEPROMvalue;
+    if (EEPROMvalue != 255) {
+      macUnwritten = false;
+    }
+  }
+  
+  return macUnwritten;
+}
+
+void clearEeprom() {
+  for (int i = 0; i <= 5; i++) {
+    EEPROM.write(i, 255);
+  }
+
+  macUnwritten = true;
+  Serial.println("EEPROM cleared");
+}
+
+void generateNewMacEeprom() {
+  for (int i = 0; i <= 5; i++) {
+    EEPROM.write(i, random(255));
+  }
 }
