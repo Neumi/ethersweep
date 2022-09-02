@@ -81,6 +81,6 @@ drive_motor(100, 9500, 1, 32, IP_MOTOR)
 
 
 ## Upcoming Features:
-- automatic MAC address generation at first start + EEPROM storage
-- USB interface
-- improved Broadcast mode + motor synchronization for multiple motors
+- [x] automatic MAC address generation at first start + EEPROM storage
+- [ ] USB interface
+- [ ] improved Broadcast mode + motor synchronization for multiple motors
