@@ -136,10 +136,6 @@ void setup() {
 
   randomSeed(analogRead(randomSeedPin));
   getMac();
-
-  oled.begin(&Adafruit128x32, I2C_ADDRESS);
-  oled.setFont(Adafruit5x7);
-  oled.clear();
   setupDisplay();
 
   if (ams5600.detectMagnet() == 0 ) {
@@ -403,6 +399,7 @@ boolean checkMotorDriverFailure() {
 }
 
 void setupDisplay() {
+  oled.begin(&Adafruit128x32, I2C_ADDRESS);
   oled.setFont(System5x7);
   oled.set2X();
   oled.clear();
@@ -508,10 +505,9 @@ boolean checkMacAddress() {
       macUnwritten = false;
     }
   }
-
+  
   return macUnwritten;
 }
-
 void clearEeprom() {
   for (int i = 1; i <= 5; i++) {
     EEPROM.write(i, 255);
@@ -520,6 +516,7 @@ void clearEeprom() {
   macUnwritten = true;
   debugPrintln("EEPROM cleared");
 }
+
 
 void generateNewMacEeprom() {
   for (int i = 1; i <= 5; i++) {
