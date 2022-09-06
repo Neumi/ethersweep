@@ -33,6 +33,7 @@ const int randomSeedPin = A7;
 
 int driveMode = 0;
 int motorSpeed = 0;
+int motorSlope = 0;
 int motorSteps = 0;
 int motorDirection = 0;
 int motorStepMode = 0;
@@ -116,7 +117,7 @@ unsigned long currentMillis;
 
 void setup() {
   debugBegin(9600);
-  debugPrintln("initializing...");
+  //debugPrintln("initializing...");
   pinMode(stepPin, OUTPUT);
   pinMode(dirPin, OUTPUT);
   pinMode(enablePin, OUTPUT);
@@ -185,13 +186,13 @@ void setup() {
     // try to congifure using IP address instead of DHCP:
     Ethernet.begin(mac, ip);
   } else {
-    debugPrint("DHCP ok: ");
+    //debugPrint("DHCP ok: ");
     debugPrintln(Ethernet.localIP());
   }
 #endif
 
   // start UDP
-  debugPrintln(ip);
+  //debugPrintln(ip);
   // drawDisplay();
   Udp.begin(localPort);
 
@@ -213,8 +214,8 @@ void loop() {
 
     // read the packet into packetBufffer
     Udp.read(packetBuffer, packetBufferSize);
-    debugPrintln("Contents:");
-    debugPrintln(packetBuffer);
+    // debugPrintln("Contents:");
+    // debugPrintln(packetBuffer);
 
     /*
       // reply receive message
@@ -248,6 +249,9 @@ void loop() {
     String raw_speed = root["speed"];
     raw_speed = root["speed"].as<String>();
 
+    String raw_slope = root["slope"];
+    raw_slope = root["slope"].as<String>();
+
     String raw_direction = root["direction"];
     raw_direction = root["direction"].as<String>();
 
@@ -260,19 +264,23 @@ void loop() {
     driveMode = drive_mode.toInt();
     motorSteps = raw_steps.toInt();
     motorSpeed = raw_speed.toInt();
+    motorSlope = raw_slope.toInt();
     motorDirection = raw_direction.toInt();
     motorStepMode = raw_step_mode.toInt();
     motorHold = raw_hold.toInt();
 
 
     switch (driveMode) {
-      case 0:
+      case 0: // steps
         driveMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
-        debugPrintln("motor driven");
+        //debugPrintln("motor driven");
         break;
-      case 1:
+      case 1: // home
         homeMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
-        debugPrintln("motor homed");
+        //debugPrintln("motor homed");
+        break;
+      case 2: // ramp
+        rampMotor(motorSteps, motorSpeed, motorSlope, motorDirection, motorStepMode, motorHold);
         break;
 
       case 4: // power cycle
@@ -284,6 +292,44 @@ void loop() {
     jobDone = true;
   }
 
+
+}
+void rampMotor(int motorSteps, int motorSpeed, int motorSlope, bool motorDirection, int motorStepMode, int hold) {
+  drawDisplay();
+  digitalWrite(ledPin, HIGH);
+
+  float speedCorrection = 0.0;
+  if (!eStopActive) {
+    enableMotor();
+    setStepMode(motorStepMode);
+
+    if (motorDirection == 1) {
+      digitalWrite(dirPin, HIGH);
+    }
+    else if (motorDirection == 0) {
+      digitalWrite(dirPin, LOW);
+    }
+    motorSpeed = constrain(motorSpeed, 0, 10000);
+    float slopeSteps = motorSteps / (100 / motorSlope) / 2.0;
+
+    for (int i = 0; i < motorSteps; i++) {
+      if (slopeSteps > i) {
+        speedCorrection = (slopeSteps - i) / slopeSteps;
+      }
+      if (i > motorSteps - slopeSteps) {
+        speedCorrection = 1.0 - ((motorSteps - i) / slopeSteps);
+      }
+
+      digitalWrite(stepPin, LOW);
+      delayMicroseconds(motorSpeed + round(motorSpeed * speedCorrection));
+      digitalWrite(stepPin, HIGH);
+      delayMicroseconds(motorSpeed + round(motorSpeed * speedCorrection));
+    }
+    if (hold == 0) {
+      disableMotor();
+    }
+  }
+  digitalWrite(ledPin, LOW);
 
 }
 
@@ -335,14 +381,14 @@ void driveMotor(int motorSteps, int motorSpeed, bool motorDirection, int motorSt
 }
 
 void powerCycleMotor() {
-  debugPrintln("MOTOR ERROR STATE: ");
-  debugPrint(checkMotorDriverFailure());
+  //debugPrintln("MOTOR ERROR STATE: ");
+  //debugPrint(checkMotorDriverFailure());
   disableMotor();
   delay(50);
   enableMotor();
   delay(50);
-  debugPrintln("MOTOR ERROR STATE: ");
-  debugPrint(checkMotorDriverFailure());
+  //debugPrintln("MOTOR ERROR STATE: ");
+  //debugPrint(checkMotorDriverFailure());
 }
 
 
@@ -505,7 +551,7 @@ boolean checkMacAddress() {
       macUnwritten = false;
     }
   }
-  
+
   return macUnwritten;
 }
 void clearEeprom() {
@@ -514,7 +560,7 @@ void clearEeprom() {
   }
 
   macUnwritten = true;
-  debugPrintln("EEPROM cleared");
+  //debugPrintln("EEPROM cleared");
 }
 
 

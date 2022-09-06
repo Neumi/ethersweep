@@ -57,7 +57,7 @@ float encoderAngleLast = 0.0;
 
 
 unsigned long previousMillis = 0;
-const long sensorRefresh = 100;
+const long sensorRefresh = 50;
 
 const byte macEepromStartAddress = 1; // has to be one, because first MAC address element is not to be changed
 const byte macEepromEndAddress = 5;
@@ -150,7 +150,7 @@ void loop() {
   drawDisplay();
   currentMillis = millis();
   if (currentMillis - previousMillis >= sensorRefresh) {
-    drawDisplay(); // time killer!
+    //drawDisplay(); // time killer!
     previousMillis = currentMillis;
   }
 
@@ -351,6 +351,7 @@ void initializeDisplay() {
   oled.println("ethersweep    v3.0.6");
   oled.println("00.0V | DHCP | 000.0°");
   oled.println("END   | STOP |  ACT");
+  oled.println("USB MODE");
 
   //oled.println("IP: " + displayAddress(Ethernet.localIP()));
   // rows = oled.fontRows();
