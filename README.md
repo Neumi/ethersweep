@@ -84,7 +84,7 @@ drive_motor(100, 9500, 1, 32, IP_MOTOR)
 - [x] automatic MAC address generation at first start + EEPROM storage
 - [ ] USB interface
 - [ ] improved Broadcast mode + motor synchronization for multiple motors
-- [ ] motor ramping mode
+- [x] motor ramping mode
 - [ ] motor servo mode
 - [ ] (state) response to sender
 - [ ] µC upgrade ?
