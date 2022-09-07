@@ -76,8 +76,7 @@ drive_motor(100, 9500, 1, 32, IP_MOTOR)
 ```
 
 ## Video:
-[![LINK TO VIDEO](https://img.youtube.com/vi/JtqH8TxggIc/0.jpg)](https://www.youtube.com/watch?v=JtqH8TxggIc)
-
+[![LINK TO VIDEO](https://img.youtube.com/vi/GcEzCWUcEBY/0.jpg)](https://www.youtube.com/watch?v=GcEzCWUcEBY)
 
 
 ## Upcoming Features:
