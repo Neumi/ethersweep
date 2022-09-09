@@ -291,9 +291,8 @@ void loop() {
 
     jobDone = true;
   }
-
-
 }
+
 void rampMotor(int motorSteps, int motorSpeed, int motorSlope, bool motorDirection, int motorStepMode, int hold) {
   drawDisplay();
   digitalWrite(ledPin, HIGH);
