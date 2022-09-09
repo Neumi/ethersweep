@@ -78,6 +78,7 @@ drive_motor(100, 9500, 1, 32, IP_MOTOR)
 ## Video:
 [![LINK TO VIDEO](https://img.youtube.com/vi/GcEzCWUcEBY/0.jpg)](https://www.youtube.com/watch?v=GcEzCWUcEBY)
 
+Follow the project on hackaday.io: https://hackaday.io/project/187187-ethersweep
 
 ## Upcoming Features:
 - [x] automatic MAC address generation at first start + EEPROM storage
