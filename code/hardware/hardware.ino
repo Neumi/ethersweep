@@ -487,6 +487,7 @@ void drawDisplay() {
     oled.clearField(0, 2, 4);
     if (endStopPressed) oled.setInvertMode(1);
     oled.print("END");
+    oled.setInvertMode(0);
   }
 
   if (eStopActive != eStopActiveLast) {
