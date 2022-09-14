@@ -473,13 +473,13 @@ void drawDisplay() {
   voltage = getVoltage();
 
   if (voltage != voltageLast ) {
-    oled.clearField(0, 1, 3);
+    oled.clearField(0, 1, 4);
     //if (voltage < 10.0) oled.print("");
     oled.print(voltage, 1);
   }
 
   if (encoderAngle != encoderAngleLast ) {
-    oled.clearField(90, 1, 3);
+    oled.clearField(90, 1, 6);
     oled.print(encoderAngle, 1);
   }
 
