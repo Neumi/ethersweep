@@ -35,7 +35,7 @@ Every motor has to be connected to an Ethernet network (optimally with DHCP) and
 - Fits on a NEMA17 stepper motor
 
 
-<img alt="Display content" src="/img/display.png" width="50%">
+<img alt="Display content" src="/img/display.png" width="100%">
 
 
 ## How to get started:
