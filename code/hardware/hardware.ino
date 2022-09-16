@@ -12,6 +12,8 @@
 
 #define SYS_VOL   3.3
 
+const String version = "3.0.7";
+
 AMS_5600 ams5600;
 
 // motor driver
@@ -465,7 +467,7 @@ void setupDisplay() {
   oled.println("ethersweep");
   oled.set1X();
   oled.println(" ");
-  oled.println("       v3.0.6");
+  oled.println("       v" + version);
   // rows = oled.fontRows();
 }
 
@@ -473,7 +475,7 @@ void setupDisplay() {
 void initializeDisplay() {
   oled.setFont(System5x7);
   oled.clear();
-  oled.println("ethersweep    v3.0.6");
+  oled.println("ethersweep    v" + version);
   oled.println("00.0V | " + ip_mode + " | 000.0°");
   oled.println("END   | STOP |  ACT");
   oled.println("IP: " + displayAddress(Ethernet.localIP()));
