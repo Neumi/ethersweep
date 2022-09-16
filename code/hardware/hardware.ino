@@ -527,13 +527,12 @@ void drawDisplay() {
   jobDoneLast = jobDone;
 }
 
-float getVoltage() {
-  float vin = (analogRead(A6) * 3.3) / 1024.0 / (1000.0 / (10000.0 + 1000.0)) ;
+float getVoltage() {  
+  float vin = (analogRead(A6) * 3.3) / 1024.0 / (1.0 / 11.0);
   return vin;
 }
 
-String displayAddress(IPAddress address)
-{
+String displayAddress(IPAddress address){
   return String(address[0]) + "." +
          String(address[1]) + "." +
          String(address[2]) + "." +
@@ -541,7 +540,6 @@ String displayAddress(IPAddress address)
 }
 
 float getEncoderAngle() {
-
   float normalAngle;
   float rawAngle = ams5600.getRawAngle();
   /* Raw data reports 0 - 4095 segments, which is 0.087890625 of a degree */
@@ -571,15 +569,13 @@ boolean checkMacAddress() {
 
   return macUnwritten;
 }
+
 void clearEeprom() {
   for (int i = 1; i <= 5; i++) {
     EEPROM.write(i, 255);
   }
-
   macUnwritten = true;
-  //debugPrintln("EEPROM cleared");
 }
-
 
 void generateNewMacEeprom() {
   for (int i = 1; i <= 5; i++) {
