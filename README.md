@@ -82,7 +82,7 @@ Follow the project on hackaday.io: https://hackaday.io/project/187187-ethersweep
 
 ## Upcoming Features:
 - [x] automatic MAC address generation at first start + EEPROM storage
-- [ ] USB interface
+- [x] USB interface
 - [ ] improved Broadcast mode + motor synchronization for multiple motors
 - [x] motor ramping mode
 - [ ] motor servo mode
