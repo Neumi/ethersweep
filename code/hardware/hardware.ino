@@ -50,6 +50,8 @@ boolean eStopActiveLast = false;
 boolean endStopPressedLast = false;
 boolean jobDoneLast = true;
 
+boolean usbActive = false;
+
 float voltage = 0.0;
 float encoderAngle = 0.0;
 
@@ -196,44 +198,57 @@ void setup() {
   // drawDisplay();
   Udp.begin(localPort);
 
+  Serial.setTimeout(10);
+  if (Serial.available() > 0) {
+    usbActive = true;
+    ip_mode = "USB ";
+  } else {
+    usbActive = false;
+  }
+
   debugPrintln("ok");
   initializeDisplay();
 }
 
 void loop() {
   getButtonStates();
+  if (!usbActive) {
+    int packetSize = Udp.parsePacket();
+    if (packetSize) {
+      debugPrint("Received packet of size ");
+      debugPrintln(packetSize);
+      debugPrint("From ");
+      IPAddress remote = Udp.remoteIP();
+      debugPrint(", port ");
+      debugPrintln(Udp.remotePort());
 
-  int packetSize = Udp.parsePacket();
-  if (packetSize) {
-    debugPrint("Received packet of size ");
-    debugPrintln(packetSize);
-    debugPrint("From ");
-    IPAddress remote = Udp.remoteIP();
-    debugPrint(", port ");
-    debugPrintln(Udp.remotePort());
+      // read the packet into packetBufffer
+      Udp.read(packetBuffer, packetBufferSize);
+      // debugPrintln("Contents:");
+      // debugPrintln(packetBuffer);
 
-    // read the packet into packetBufffer
-    Udp.read(packetBuffer, packetBufferSize);
-    // debugPrintln("Contents:");
-    // debugPrintln(packetBuffer);
-
-    /*
-      // reply receive message
-      // send a reply to the IP address and port that sent us the packet we received
-      Udp.beginPacket(Udp.remoteIP(), remotePort);
-      Udp.write(packetBuffer);
-      Udp.endPacket();
-    */
-
-    jobDone = false;
-
+      /*
+        // reply receive message
+        // send a reply to the IP address and port that sent us the packet we received
+        Udp.beginPacket(Udp.remoteIP(), remotePort);
+        Udp.write(packetBuffer);
+        Udp.endPacket();
+      */
+      jobDone = false;
+    }
   }
   else {
-    currentMillis = millis();
-    if (currentMillis - previousMillis >= sensorRefresh) {
-      drawDisplay(); // time killer!
-      previousMillis = currentMillis;
+    if (Serial.available() > 0)
+    {
+      Serial.readStringUntil('\n').toCharArray(packetBuffer, packetBufferSize);
+      jobDone = false;
     }
+  }
+
+  currentMillis = millis();
+  if (currentMillis - previousMillis >= sensorRefresh) {
+    drawDisplay(); // time killer!
+    previousMillis = currentMillis;
   }
 
   if (jobDone == false) {
@@ -282,7 +297,6 @@ void loop() {
       case 2: // ramp
         rampMotor(motorSteps, motorSpeed, motorSlope, motorDirection, motorStepMode, motorHold);
         break;
-
       case 4: // power cycle
         powerCycleMotor();
         break;
@@ -525,7 +539,7 @@ String displayAddress(IPAddress address)
 }
 
 float getEncoderAngle() {
-  
+
   float normalAngle;
   float rawAngle = ams5600.getRawAngle();
   /* Raw data reports 0 - 4095 segments, which is 0.087890625 of a degree */
