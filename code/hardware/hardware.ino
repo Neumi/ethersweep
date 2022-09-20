@@ -2,7 +2,7 @@
 #include <Ethernet.h>
 #include <EthernetUdp.h>
 #include <IPAddress.h>
-#include <ArduinoJson.h>
+#include <ArduinoJson.h> // works only in version 5 currently
 #include <EEPROM.h>
 #include "SSD1306Ascii.h"
 #include "SSD1306AsciiAvrI2c.h"
