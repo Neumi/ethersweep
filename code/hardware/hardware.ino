@@ -543,7 +543,7 @@ float getEncoderAngle() {
   float normalAngle;
   float rawAngle = ams5600.getRawAngle();
   /* Raw data reports 0 - 4095 segments, which is 0.087890625 of a degree */
-  normalAngle = rawAngle * 0.087890625;
+  normalAngle = (rawAngle * 360.0) / 4096.0;
   return normalAngle;
 }
 
