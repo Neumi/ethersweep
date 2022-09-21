@@ -37,9 +37,9 @@ int driveMode = 0;
 int motorSpeed = 0;
 int motorSlope = 0;
 int motorSteps = 0;
-int motorDirection = 0;
+boolean motorDirection = 0;
 int motorStepMode = 0;
-int motorHold = 0;
+boolean motorHold = 0;
 
 boolean endStopped = false;
 
@@ -109,6 +109,8 @@ unsigned int remotePort = 8889;
 
 const int packetBufferSize = 128;
 char packetBuffer[packetBufferSize];  // buffer to hold incoming packet,
+
+StaticJsonDocument<128> doc;
 
 // An EthernetUDP instance to let us send and receive packets over UDP
 EthernetUDP Udp;
@@ -254,37 +256,21 @@ void loop() {
   }
 
   if (jobDone == false) {
-    DynamicJsonBuffer jsonBuffer;
-    JsonObject& root = jsonBuffer.parseObject(packetBuffer);
 
-    String drive_mode = root["drivemode"];
-    drive_mode = root["drivemode"].as<String>();
+    DeserializationError error = deserializeJson(doc, packetBuffer, packetBufferSize);
+    if (error) {
+      Serial.print(F("deserializeJson() failed: "));
+      Serial.println(error.f_str());
+      return;
+    }
 
-    String raw_steps = root["steps"];
-    raw_steps = root["steps"].as<String>();
-
-    String raw_speed = root["speed"];
-    raw_speed = root["speed"].as<String>();
-
-    String raw_slope = root["slope"];
-    raw_slope = root["slope"].as<String>();
-
-    String raw_direction = root["direction"];
-    raw_direction = root["direction"].as<String>();
-
-    String raw_step_mode = root["stepmode"];
-    raw_step_mode = root["stepmode"].as<String>();
-
-    String raw_hold = root["hold"];
-    raw_hold = root["hold"].as<String>();
-
-    driveMode = drive_mode.toInt();
-    motorSteps = raw_steps.toInt();
-    motorSpeed = raw_speed.toInt();
-    motorSlope = raw_slope.toInt();
-    motorDirection = raw_direction.toInt();
-    motorStepMode = raw_step_mode.toInt();
-    motorHold = raw_hold.toInt();
+    driveMode = doc["drivemode"];
+    motorSteps = doc["steps"];
+    motorSpeed = doc["speed"];
+    motorSlope = doc["slope"];
+    motorDirection = doc["direction"];
+    motorStepMode = doc["stepmode"];
+    motorHold = doc["hold"];
 
 
     switch (driveMode) {
@@ -309,7 +295,7 @@ void loop() {
   }
 }
 
-void rampMotor(int motorSteps, int motorSpeed, int motorSlope, bool motorDirection, int motorStepMode, int hold) {
+void rampMotor(int motorSteps, int motorSpeed, int motorSlope, boolean motorDirection, int motorStepMode, boolean hold) {
   drawDisplay();
   digitalWrite(ledPin, HIGH);
 
@@ -348,7 +334,7 @@ void rampMotor(int motorSteps, int motorSpeed, int motorSlope, bool motorDirecti
 
 }
 
-void homeMotor(int motorSteps, int motorSpeed, bool motorDirection, int motorStepMode, int hold) {
+void homeMotor(int motorSteps, int motorSpeed, boolean motorDirection, int motorStepMode, boolean hold) {
   int homingState = 0;
   const int homing_runs = 3;
   while (1) {
@@ -369,7 +355,7 @@ void homeMotor(int motorSteps, int motorSpeed, bool motorDirection, int motorSte
 }
 
 
-void driveMotor(int motorSteps, int motorSpeed, bool motorDirection, int motorStepMode, int hold) {
+void driveMotor(int motorSteps, int motorSpeed, boolean motorDirection, int motorStepMode, boolean hold) {
   drawDisplay();
   digitalWrite(ledPin, HIGH);
   if (!eStopActive) {
@@ -527,12 +513,12 @@ void drawDisplay() {
   jobDoneLast = jobDone;
 }
 
-float getVoltage() {  
+float getVoltage() {
   float vin = (analogRead(A6) * 3.3) / 1024.0 / (1.0 / 11.0);
   return vin;
 }
 
-String displayAddress(IPAddress address){
+String displayAddress(IPAddress address) {
   return String(address[0]) + "." +
          String(address[1]) + "." +
          String(address[2]) + "." +
