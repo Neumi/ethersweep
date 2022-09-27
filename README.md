@@ -1,6 +1,8 @@
 # Ethersweep
 ### An Open Source Ethernet controllable stepper motor. Easy interfacing with JSON and UDP from any device on the network in any language you choose.
 
+*If you want to stay updated, or interested in buying a developer version later, please write an email to `ethersweep@inprocess.xyz` Thanks!*
+
 <img alt="linear axis" src="/img/linear_axis.png">
 
 
