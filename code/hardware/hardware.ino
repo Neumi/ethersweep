@@ -145,6 +145,14 @@ void setup() {
   getMac();
   setupDisplay();
 
+  Serial.setTimeout(10);
+  if (Serial.available() > 0) {
+    usbActive = true;
+    ip_mode = "USB ";
+  } else {
+    usbActive = false;
+  }
+
   if (ams5600.detectMagnet() == 0 ) {
     while (1) {
       if (ams5600.detectMagnet() == 1 ) {
@@ -163,52 +171,45 @@ void setup() {
   //digitalWrite(resetPin, HIGH);
   disableMotor();
   // setStepMode(2);
-
+  if (!usbActive) {
 #if STATIC
-  Ethernet.begin(mac, ip);
-  // Check for Ethernet hardware present
-  if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-    debugPrintln("Ethernet hardware not found. Critical ERROR");
-    while (true) {
-      delay(1); // do nothing, no point running without Ethernet hardware
-    }
-  }
-  if (Ethernet.linkStatus() == LinkOFF) {
-    debugPrintln("Ethernet cable is not connected.");
-  }
-#else
-  if (Ethernet.begin(mac) == 0) {
-    debugPrintln("DHCP error");
+    Ethernet.begin(mac, ip);
     // Check for Ethernet hardware present
     if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-      debugPrintln("eth hardware err");
+      debugPrintln("Ethernet hardware not found. Critical ERROR");
       while (true) {
         delay(1); // do nothing, no point running without Ethernet hardware
       }
     }
     if (Ethernet.linkStatus() == LinkOFF) {
-      debugPrintln("eth cable err");
+      debugPrintln("Ethernet cable is not connected.");
     }
-    // try to congifure using IP address instead of DHCP:
-    Ethernet.begin(mac, ip);
-  } else {
-    //debugPrint("DHCP ok: ");
-    debugPrintln(Ethernet.localIP());
-  }
+#else
+    if (Ethernet.begin(mac) == 0) {
+      debugPrintln("DHCP error");
+      // Check for Ethernet hardware present
+      if (Ethernet.hardwareStatus() == EthernetNoHardware) {
+        debugPrintln("eth hardware err");
+        while (true) {
+          delay(1); // do nothing, no point running without Ethernet hardware
+        }
+      }
+      if (Ethernet.linkStatus() == LinkOFF) {
+        debugPrintln("eth cable err");
+      }
+      // try to congifure using IP address instead of DHCP:
+      Ethernet.begin(mac, ip);
+    } else {
+      //debugPrint("DHCP ok: ");
+      debugPrintln(Ethernet.localIP());
+    }
 #endif
+    Udp.begin(localPort);
+  }
 
   // start UDP
   //debugPrintln(ip);
   // drawDisplay();
-  Udp.begin(localPort);
-
-  Serial.setTimeout(10);
-  if (Serial.available() > 0) {
-    usbActive = true;
-    ip_mode = "USB ";
-  } else {
-    usbActive = false;
-  }
 
   debugPrintln("ok");
   initializeDisplay();
@@ -256,39 +257,35 @@ void loop() {
   }
 
   if (jobDone == false) {
-
     DeserializationError error = deserializeJson(doc, packetBuffer, packetBufferSize);
     if (error) {
-      Serial.print(F("deserializeJson() failed: "));
-      Serial.println(error.f_str());
-      return;
-    }
+      debugPrint(F("deserializeJson() failed: "));
+      debugPrintln(error.f_str());
+    } else {
+      driveMode = doc["drivemode"];
+      motorSteps = doc["steps"];
+      motorSpeed = doc["speed"];
+      motorSlope = doc["slope"];
+      motorDirection = doc["direction"];
+      motorStepMode = doc["stepmode"];
+      motorHold = doc["hold"];
 
-    driveMode = doc["drivemode"];
-    motorSteps = doc["steps"];
-    motorSpeed = doc["speed"];
-    motorSlope = doc["slope"];
-    motorDirection = doc["direction"];
-    motorStepMode = doc["stepmode"];
-    motorHold = doc["hold"];
-
-
-    switch (driveMode) {
-      case 0: // steps
-        driveMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
-        //debugPrintln("motor driven");
-        break;
-      case 1: // home
-        homeMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
-        //debugPrintln("motor homed");
-        break;
-      case 2: // ramp
-        rampMotor(motorSteps, motorSpeed, motorSlope, motorDirection, motorStepMode, motorHold);
-        break;
-      case 4: // power cycle
-        powerCycleMotor();
-        break;
-
+      switch (driveMode) {
+        case 0: // steps
+          driveMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
+          //debugPrintln("motor driven");
+          break;
+        case 1: // home
+          homeMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
+          //debugPrintln("motor homed");
+          break;
+        case 2: // ramp
+          rampMotor(motorSteps, motorSpeed, motorSlope, motorDirection, motorStepMode, motorHold);
+          break;
+        case 4: // power cycle
+          powerCycleMotor();
+          break;
+      }
     }
 
     jobDone = true;
