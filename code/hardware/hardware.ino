@@ -516,6 +516,10 @@ float getVoltage() {
 }
 
 String displayAddress(IPAddress address) {
+  Serial.println(address);
+  if(address[0] == 255 && address[1] == 255 && address[2] == 255 && address[3] == 255) {
+    return "none";
+  }
   return String(address[0]) + "." +
          String(address[1]) + "." +
          String(address[2]) + "." +
