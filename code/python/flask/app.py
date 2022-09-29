@@ -50,6 +50,7 @@ def run_motor_drive():
         except:
             return "failed to reach motor"
 
+        del drive_data['ip_address']
         print(drive_data)
         return str(drive_data)
 
