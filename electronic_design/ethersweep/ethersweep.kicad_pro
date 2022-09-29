@@ -391,7 +391,7 @@
   "pcbnew": {
     "last_paths": {
       "gencad": "../../../../Desktop/ethersweep.cad",
-      "idf": "ethersweep.emn",
+      "idf": "../../../../Desktop/ethersweep.emn",
       "netlist": "ethersweep.net",
       "specctra_dsn": "../../../../Desktop/ethersweep.dsn",
       "step": "../../../../Desktop/ethersweep_bottom.STEP",
