@@ -123,7 +123,7 @@ unsigned long currentMillis;
 
 void setup() {
   debugBegin(9600);
-  //debugPrintln("initializing...");
+  debugPrintln("initializing...");
   pinMode(stepPin, OUTPUT);
   pinMode(dirPin, OUTPUT);
   pinMode(enablePin, OUTPUT);
