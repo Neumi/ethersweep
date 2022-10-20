@@ -64,7 +64,7 @@ import socket
 import json
 
 IP_MOTOR = "192.168.1.185" #local motor controller IP
-UDP_PORT = 1337
+UDP_PORT = 8888
 
 
 def drive_motor(steps, speed, direction, stepmode, motor_ip):
