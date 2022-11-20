@@ -1,8 +1,9 @@
 #include "Motor.h"
 
-Motor::Motor(SensorManager *sensor, byte stepPin, byte dirPin, byte enablePin, byte m0Pin, byte m1Pin, byte ledPin)
+Motor::Motor(SensorManager *sensor, Display *display, byte stepPin, byte dirPin, byte enablePin, byte m0Pin, byte m1Pin, byte ledPin)
 {
     this->sensor = sensor;
+    this->display = display;
     this->stepPin = stepPin;
     this->dirPin = dirPin;
     this->enablePin = enablePin;
@@ -11,12 +12,12 @@ Motor::Motor(SensorManager *sensor, byte stepPin, byte dirPin, byte enablePin, b
     this->ledPin = ledPin;
 }
 
-void Motor::setStepMode(int mode)
+void Motor::setStepMode(byte mode)
 {
     // sets TMC2208 step modes: full step to 1/16 step mode
     switch (mode)
     {
-    // MS2, MS1: 00: 1/8, 11: 1/16
+    // MS0, MS1: 10: 1/2, 01: 1/4, 00: 1/8, 11: 1/16
     case 2:
         digitalWrite(this->m0Pin, HIGH);
         digitalWrite(this->m1Pin, LOW);
@@ -40,11 +41,12 @@ void Motor::setStepMode(int mode)
     }
 }
 
-void Motor::driveMotor(int motorSteps, int motorSpeed, bool motorDirection, int motorStepMode, bool hold)
+void Motor::driveMotor(int motorSteps, int motorSpeed, bool motorDirection, byte motorStepMode, bool hold)
 {
-    //drawDisplay();
+    this->display->drawDisplay();
+
     digitalWrite(this->ledPin, HIGH);
-    if (!this->eStopActive)
+    if (!this->sensor->getEmergencyStopState())
     {
         this->enableMotor();
         this->setStepMode(motorStepMode);
@@ -59,6 +61,11 @@ void Motor::driveMotor(int motorSteps, int motorSpeed, bool motorDirection, int 
         motorSpeed = constrain(motorSpeed, 0, 10000);
         for (int i = 0; i < motorSteps; i++)
         {
+            if (this->sensor->getEmergencyStopState())
+            {
+                this->disableMotor();
+                break;
+            }
             digitalWrite(this->stepPin, LOW);
             delayMicroseconds(motorSpeed);
             digitalWrite(this->stepPin, HIGH);
@@ -72,68 +79,72 @@ void Motor::driveMotor(int motorSteps, int motorSpeed, bool motorDirection, int 
     digitalWrite(this->ledPin, LOW);
 }
 
-void Motor::rampMotor(int motorSteps, int motorSpeed, int motorSlope, bool motorDirection, int motorStepMode, bool hold)
+void Motor::rampMotor(int motorSteps, int motorSpeed, int motorSlope, bool motorDirection, byte motorStepMode, bool hold)
 {
-    // drawDisplay();
+    this->display->drawDisplay();
     digitalWrite(this->ledPin, HIGH);
 
     float speedCorrection = 0.0;
-    if (!this->eStopActive)
+
+    this->enableMotor();
+    this->setStepMode(motorStepMode);
+
+    if (motorDirection == 1)
     {
-        this->enableMotor();
-        this->setStepMode(motorStepMode);
+        digitalWrite(this->dirPin, HIGH);
+    }
+    else if (motorDirection == 0)
+    {
+        digitalWrite(this->dirPin, LOW);
+    }
+    motorSpeed = constrain(motorSpeed, 0, 10000);
+    float slopeSteps = motorSteps / (100 / motorSlope) / 2.0;
 
-        if (motorDirection == 1)
+    for (int i = 0; i < motorSteps; i++)
+    {
+        if (slopeSteps > i)
         {
-            digitalWrite(this->dirPin, HIGH);
+            speedCorrection = (slopeSteps - i) / slopeSteps;
         }
-        else if (motorDirection == 0)
+        if (i > motorSteps - slopeSteps)
         {
-            digitalWrite(this->dirPin, LOW);
+            speedCorrection = 1.0 - ((motorSteps - i) / slopeSteps);
         }
-        motorSpeed = constrain(motorSpeed, 0, 10000);
-        float slopeSteps = motorSteps / (100 / motorSlope) / 2.0;
-
-        for (int i = 0; i < motorSteps; i++)
-        {
-            if (slopeSteps > i)
-            {
-                speedCorrection = (slopeSteps - i) / slopeSteps;
-            }
-            if (i > motorSteps - slopeSteps)
-            {
-                speedCorrection = 1.0 - ((motorSteps - i) / slopeSteps);
-            }
-
-            digitalWrite(this->stepPin, LOW);
-            delayMicroseconds(motorSpeed + round(motorSpeed * speedCorrection));
-            digitalWrite(this->stepPin, HIGH);
-            delayMicroseconds(motorSpeed + round(motorSpeed * speedCorrection));
-        }
-        if (hold == 0)
+        if (this->sensor->getEmergencyStopState())
         {
             this->disableMotor();
+            break;
         }
+        digitalWrite(this->stepPin, LOW);
+        delayMicroseconds(motorSpeed + round(motorSpeed * speedCorrection));
+        digitalWrite(this->stepPin, HIGH);
+        delayMicroseconds(motorSpeed + round(motorSpeed * speedCorrection));
     }
+    if (hold == 0)
+    {
+        this->disableMotor();
+    }
+
     digitalWrite(this->ledPin, LOW);
 }
 
-void Motor::homeMotor(int motorSteps, int motorSpeed, bool motorDirection, int motorStepMode, bool hold)
+void Motor::homeMotor(int motorSteps, int motorSpeed, bool motorDirection, byte motorStepMode, bool hold)
 {
     int homingState = 0;
     const int homing_runs = 3;
-    while (1)
+    while (true)
     {
         if (homingState == homing_runs)
         {
             break;
         }
-        this->sensor->getEmergencyStopState();
-        this->sensor->getEndStopState();
-        this->sensor->getMotorDriverFailure();
-        this->sensor->getJobState();
+        if (this->sensor->getEmergencyStopState())
+        {
+            this->disableMotor();
+            break;
+        }
 
-        if (this->endStopPressed)
+        if (this->sensor->getEndStopState())
         {
             if (homingState < homing_runs - 1)
             {
@@ -143,7 +154,6 @@ void Motor::homeMotor(int motorSteps, int motorSpeed, bool motorDirection, int m
         }
         driveMotor(1, motorSpeed * (2 * homingState + 1), motorDirection, motorStepMode, 1);
     }
-    // driveMotor(0, 0, 0, 0, 1); // set holding state
 }
 
 void Motor::disableMotor()
@@ -167,12 +177,8 @@ void Motor::enableMotor()
 
 void Motor::powerCycleMotor()
 {
-    // debugPrintln("MOTOR ERROR STATE: ");
-    // debugPrint(checkMotorDriverFailure());
     this->disableMotor();
     delay(20);
     this->enableMotor();
     delay(20);
-    // debugPrintln("MOTOR ERROR STATE: ");
-    // debugPrint(checkMotorDriverFailure());
 }

@@ -5,11 +5,10 @@ SensorManager::SensorManager(AMS_5600 *ams5600, byte eStopPin, byte endStopPin, 
 {
     this->eStopPin = eStopPin;
     this->endStopPin = endStopPin;
-    this->voltDetectPin = voltDetectPin;
     this->diagPin = diagPin;
     this->faultPin = faultPin;
+    this->voltDetectPin = voltDetectPin;
     this->jobDone = true;
-
     this->ams5600 = ams5600;
 }
 
@@ -22,7 +21,7 @@ void SensorManager::readSensorValues()
     this->endStop = getEndStopState();
     this->motorDriverDiagnose = getMotorDriverDiagnose();
     this->motorDriverFailure = getMotorDriverFailure();
-    this->jobState = getJobState();
+    this->jobDone = getJobState();
 }
 
 bool SensorManager::startUpCheck()
@@ -30,14 +29,23 @@ bool SensorManager::startUpCheck()
     this->readSensorValues();
 
     if (motorDriverDiagnose == 1)
+    {
         return false;
-    if (motorDriverFailure == 1)
-        return false;
-    if (magnet == 0)
-        return false;
-    if (voltage < 5.0)
-        return false;
+    }
 
+    if (motorDriverFailure == 1)
+    {
+        return false;
+    }
+
+    if (magnet == 0)
+    {
+        return false;
+    }
+    if (voltage < 5.0)
+    {
+        return false;
+    }
     return true;
 }
 

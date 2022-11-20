@@ -26,10 +26,10 @@ String connectionMode = "DHCP";
 IPAddress ip(0, 0, 0, 0);
 #endif
 
-SensorManager sensorManager(&ams5600, eStopPin, endStopPin, diagPin, faultPin, voltDetectPin);
-Motor motor(&sensorManager, stepPin, dirPin, enablePin, m0Pin, m1Pin, ledPin);
-Connection connection(randomSeedPin);
+SensorManager sensorManager(&ams5600, E_STOP_PIN, END_STOP_PIN, DIAG_PIN, FAULT_PIN, VOLT_DETECT_PIN);
+Connection connection(RANDOM_SEED_PIN);
 Display display(&sensorManager, &oled, &connection, connectionMode);
+Motor motor(&sensorManager, &display, STEP_PIN, DIR_PIN, ENABLE_PIN, M0_PIN, M1_PIN, LED_PIN);
 EthernetUDP Udp;
 
 int driveMode = 0;
@@ -37,7 +37,7 @@ int motorSpeed = 0;
 int motorSlope = 0;
 int motorSteps = 0;
 boolean motorDirection = 0;
-int motorStepMode = 0;
+byte motorStepMode = 0;
 boolean motorHold = 0;
 
 boolean endStopped = false;
@@ -45,21 +45,13 @@ boolean endStopped = false;
 boolean eStopActive = false;
 boolean endStopPressed = false;
 boolean motorEnabled = false;
-boolean jobDone = true;
 
 boolean eStopActiveLast = false;
 boolean endStopPressedLast = false;
-boolean jobDoneLast = true;
 boolean usbActive = false;
 
-float voltage = 0.0;
-float encoderAngle = 0.0;
-
-float voltageLast = 0.0;
-float encoderAngleLast = 0.0;
 
 unsigned long previousMillis = 0;
-const long sensorRefresh = 100;
 
 const byte macEepromStartAddress = 1; // has to be one, because first MAC address element is not to be changed
 const byte macEepromEndAddress = 5;
@@ -81,41 +73,39 @@ byte mac[] = {
     0xDE, 0x00, 0x00, 0x00, 0x00, 0x00 // first element is not to be changed as it is defined by MAC protocol
 };
 
-unsigned int localPort = 8888;  // port to listen on
-unsigned int remotePort = 8889; // port to send feedback messages
-
 unsigned long currentMillis;
 
 char packetBuffer[BUFFER_SIZE]; // buffer to hold incoming packet,
 StaticJsonDocument<BUFFER_SIZE> doc;
+Messenger messenger(&Serial);
 
 void setup()
 {
-  Messenger messenger(&Serial);
+
   messenger.init(BAUD_SPEED);
   messenger.sendInfo("Ethersweep " + version);
 
-  pinMode(stepPin, OUTPUT);
-  pinMode(dirPin, OUTPUT);
-  pinMode(enablePin, OUTPUT);
+  pinMode(STEP_PIN, OUTPUT);
+  pinMode(DIR_PIN, OUTPUT);
+  pinMode(ENABLE_PIN, OUTPUT);
 
-  pinMode(m0Pin, OUTPUT);
-  pinMode(m1Pin, OUTPUT);
-  pinMode(ledPin, OUTPUT);
+  pinMode(M0_PIN, OUTPUT);
+  pinMode(M1_PIN, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
 
-  pinMode(diagPin, INPUT);
-  pinMode(endStopPin, INPUT);
-  pinMode(eStopPin, INPUT);
+  pinMode(DIAG_PIN, INPUT);
+  pinMode(END_STOP_PIN, INPUT);
+  pinMode(E_STOP_PIN, INPUT);
 
-  digitalWrite(dirPin, LOW);
+  digitalWrite(STEP_PIN, LOW);
 
   if (!sensorManager.startUpCheck())
   {
-    messenger.sendError("Sensors fail");
+    messenger.sendError(F("Sensors fail"));
   }
   else
   {
-    messenger.sendInfo("Sensors OK");
+    messenger.sendInfo(F("Sensors OK"));
   }
 
   connection.getMac();
@@ -139,38 +129,38 @@ void setup()
     Ethernet.begin(mac, ip);
     if (Ethernet.hardwareStatus() == EthernetNoHardware)
     {
-      messenger.sendError("Ethernet error");
+      messenger.sendError(F("Ethernet error"));
     }
     if (Ethernet.linkStatus() == LinkOFF)
     {
-      messenger.sendError("Ethernet no link");
+      messenger.sendError(F("Ethernet no link"));
     }
-    messenger.sendInfo("Ethernet OK");
+    messenger.sendInfo(F("Ethernet OK"));
 #else
     if (Ethernet.begin(mac) == 0)
     {
       if (Ethernet.hardwareStatus() == EthernetNoHardware)
       {
-        messenger.sendError("Ethernet error");
+        messenger.sendError(F("Ethernet error"));
       }
       if (Ethernet.linkStatus() == LinkOFF)
       {
-        messenger.sendError("Ethernet no link");
+        messenger.sendError(F("Ethernet no link"));
       }
       Ethernet.begin(mac, ip);
     }
     else
     {
-      messenger.sendInfo("Ethernet OK");
+      messenger.sendInfo(F("Ethernet OK"));
     }
 #endif
-    Udp.begin(localPort);
+    Udp.begin(LOCAL_PORT);
   }
 
   display.initializeDisplay(Ethernet.localIP());
 
   messenger.sendInfo("IP: " + display.formatAddress(Ethernet.localIP()));
-  messenger.sendInfo("done");
+  messenger.sendInfo(F("done"));
 }
 
 void loop()
@@ -178,58 +168,37 @@ void loop()
   sensorManager.getEmergencyStopState();
   sensorManager.getEndStopState();
 
-  if (!usbActive)
-  {
-    int packetSize = Udp.parsePacket();
-    if (packetSize)
-    {
-      // debugPrintln("loop");
-      // debugPrint("Received packet of size ");
-      // debugPrintln(packetSize);
-      // debugPrint("From ");
-      IPAddress remoteIP = Udp.remoteIP();
-      // debugPrint(remoteIP);
-      // debugPrint(", port ");
-      // debugPrintln(Udp.remotePort());
-
-      // read the packet into packetBufffer
-      Udp.read(packetBuffer, BUFFER_SIZE);
-      // debugPrintln("Contents:");
-      // debugPrintln(packetBuffer);
-
-      /*
-        // reply receive message
-        // send a reply to the IP address and port that sent us the packet we received
-        Udp.beginPacket(Udp.remoteIP(), remotePort);
-        Udp.write(packetBuffer);
-        Udp.endPacket();
-      */
-      jobDone = false;
-    }
-  }
-  else
+  if (usbActive)
   {
     if (Serial.available() > 0)
     {
       Serial.readStringUntil('\n').toCharArray(packetBuffer, BUFFER_SIZE);
-      jobDone = false;
+      sensorManager.setJobState(false);
+    }
+  }
+  else
+  {
+    int packetSize = Udp.parsePacket();
+    if (packetSize)
+    {
+      Udp.read(packetBuffer, BUFFER_SIZE);
+      sensorManager.setJobState(false);
     }
   }
 
   currentMillis = millis();
-  if (currentMillis - previousMillis >= sensorRefresh)
+  if (currentMillis - previousMillis >= DISPLAY_REFRESH)
   {
-    display.drawDisplay(); // time killer!
+    display.drawDisplay();
     previousMillis = currentMillis;
   }
 
-  if (jobDone == false)
+  if (!sensorManager.getJobState())
   {
     DeserializationError error = deserializeJson(doc, packetBuffer, BUFFER_SIZE);
     if (error)
     {
-      // debugPrint(F("deserializeJson() failed: "));
-      // debugPrintln(error.f_str());
+      messenger.sendError(F("JSON error"));
     }
     else
     {
@@ -243,23 +212,21 @@ void loop()
 
       switch (driveMode)
       {
-      case STEPS: // steps
+      case STEPS:
         motor.driveMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
-        // debugPrintln("motor driven");
         break;
-      case HOME: // home
+      case HOME:
         motor.homeMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
-        // debugPrintln("motor homed");
         break;
-      case RAMP: // ramp
+      case RAMP:
         motor.rampMotor(motorSteps, motorSpeed, motorSlope, motorDirection, motorStepMode, motorHold);
         break;
-      case POWERCYCLE: // power cycle
+      case POWERCYCLE:
         motor.powerCycleMotor();
         break;
       }
     }
 
-    jobDone = true;
+    sensorManager.setJobState(true);
   }
 }

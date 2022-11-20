@@ -2,7 +2,6 @@
 #include <Arduino.h>
 #include <AS5600.h>
 
-
 class SensorManager
 {
 private:
@@ -22,7 +21,7 @@ public:
     bool endStop;
     bool motorDriverDiagnose;
     bool motorDriverFailure;
-    bool jobState;
+    
 
     SensorManager(AMS_5600 *ams5600, byte eStopPin, byte endStopPin, byte diagPin, byte faultPin, byte voltDetectPin);
     void readSensorValues();
