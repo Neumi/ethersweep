@@ -1,7 +1,7 @@
 # Ethersweep
 ### An Open Source Ethernet controllable stepper motor. Easy interfacing with JSON and UDP from any device on the network in any language you choose.
 
-*If you want to stay updated, or interested in buying a developer version later, please write an email to `ethersweep@inprocess.xyz` Thanks!*
+*As there is quite some interest in buying a controller, please contact me via ethersweep@inprocess.xyz. The cost for one controller is currently around 150€ for an assembled + tested version and 90€ for a kit that needs some soldering. Plus shipping from Germany. Unfortunately we're out of stock and due to supplychain issues we are not able to get new controllers before january 2023. But you can, of course, try to order the parts on your own! (please see https://hackaday.io/project/187187/components)*
 
 More media/press material:
 https://drive.google.com/drive/folders/1qrk8QeEkzJ8hkr-H0x3y7xxhLTKhMb_F?usp=share_link
