@@ -92,4 +92,5 @@ Follow the project on hackaday.io: https://hackaday.io/project/187187-ethersweep
 - [x] motor ramping mode
 - [ ] motor servo mode
 - [ ] (state) response to sender
-- [ ] µC upgrade ?
+- [ ] µC upgrade to STM32f103
+- [ ] TMC2209 upgrade
