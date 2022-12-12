@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "SensorManager.h"
 
 SensorManager::SensorManager(AMS_5600 *ams5600, byte eStopPin, byte endStopPin, byte diagPin, byte faultPin, byte voltDetectPin)
@@ -10,6 +9,15 @@ SensorManager::SensorManager(AMS_5600 *ams5600, byte eStopPin, byte endStopPin, 
     this->voltDetectPin = voltDetectPin;
     this->jobDone = true;
     this->ams5600 = ams5600;
+
+    init();
+}
+
+void SensorManager::init()
+{
+    pinMode(this->eStopPin, INPUT);
+    pinMode(this->endStopPin, INPUT);
+    pinMode(this->diagPin, INPUT);
 }
 
 void SensorManager::readSensorValues()

@@ -9,6 +9,7 @@ Display::Display(SensorManager *sensor, SSD1306AsciiAvrI2c *oled, Connection *co
     this->connectionMode = connectionMode;
 }
 
+// reads and gets data from sensor
 void Display::getData()
 {
     this->emergencyStopState = this->sensor->getEmergencyStopState();
@@ -19,6 +20,7 @@ void Display::getData()
     this->jobDone = this->sensor->getJobState();
 }
 
+// refresh and draw all data on display
 void Display::drawDisplay()
 {
     this->getData();
@@ -74,6 +76,7 @@ void Display::drawDisplay()
         this->oled->setInvertMode(0);
     }
 
+    // writes memory data to only refresh new data on display
     this->lastVoltage = this->voltage;
     this->lastEncoderAngle = this->encoderAngle;
     this->lastEndStopState = this->endStopState;
@@ -81,19 +84,20 @@ void Display::drawDisplay()
     this->lastJobDone = this->jobDone;
 }
 
+// shows display at setup time (startup)
 void Display::setupDisplay()
 {
     this->oled->begin(&Adafruit128x32, OLED_I2C_ADDRESS);
     this->oled->setFont(System5x7);
     this->oled->set2X();
     this->oled->clear();
-    this->oled->println("ethersweep");
+    this->oled->println(F("ethersweep"));
     this->oled->set1X();
-    this->oled->println(" ");
+    this->oled->println(F(" "));
     this->oled->println("       v" + version);
-    // rows = this->oled.fontRows();
 }
 
+// formats IP to a human readable string
 String Display::formatAddress(IPAddress address)
 {
     if (address[0] == 255 && address[1] == 255 && address[2] == 255 && address[3] == 255)
@@ -106,13 +110,13 @@ String Display::formatAddress(IPAddress address)
            String(address[3]);
 }
 
+// initializes display that has to happen once on startup. Screen is saved in memory of display.
 void Display::initializeDisplay(IPAddress address)
 {
     this->oled->setFont(System5x7);
     this->oled->clear();
     this->oled->println("ethersweep    v" + version);
     this->oled->println("00.0V | " + this->connectionMode + " | 000.0°");
-    this->oled->println("END   | STOP |  ACT");
+    this->oled->println(F("END   | STOP |  ACT"));
     this->oled->println("IP: " + this->formatAddress(address));
-    // rows = this->oled->fontRows();
 }

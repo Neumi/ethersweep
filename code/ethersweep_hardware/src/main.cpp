@@ -1,5 +1,6 @@
 // FOR HARDWARE 3.0.3 and 3.0.4 and above
 #include <Arduino.h>
+#include <SPI.h>
 #include <Ethernet.h>
 #include <EthernetUdp.h>
 #include <IPAddress.h>
@@ -7,7 +8,6 @@
 #include "SSD1306Ascii.h"
 #include "SSD1306AsciiAvrI2c.h"
 #include <Wire.h>
-#include <AS5600.h>
 #include "Configuration.h"
 #include "Connection.h"
 #include "SensorManager.h"
@@ -19,10 +19,10 @@ SSD1306AsciiAvrI2c oled;
 AMS_5600 ams5600;
 
 #if STATIC_IP
-String connectionMode = "STAT";
+String connectionMode = STAT;
 IPAddress ip(192, 168, 1, 111); // static IP
 #else
-String connectionMode = "DHCP";
+String connectionMode = DHCP;
 IPAddress ip(0, 0, 0, 0);
 #endif
 
@@ -50,58 +50,30 @@ boolean eStopActiveLast = false;
 boolean endStopPressedLast = false;
 boolean usbActive = false;
 
-
-unsigned long previousMillis = 0;
+unsigned long previousMillis;
+unsigned long currentMillis;
 
 const byte macEepromStartAddress = 1; // has to be one, because first MAC address element is not to be changed
 const byte macEepromEndAddress = 5;
 boolean macUnwritten = true;
 
-/*
-#if DEBUG_MODE
-#define debugBegin(...) Serial.begin(__VA_ARGS__)
-#define debugPrint(...) Serial.print(__VA_ARGS__)
-#define debugPrintln(...) Serial.println(__VA_ARGS__)
-#else
-#define debugBegin(...)
-#define debugPrint(...)
-#define debugPrintln(...)
-#endif
-*/
 
+// ETHERNET & UDP
 byte mac[] = {
     0xDE, 0x00, 0x00, 0x00, 0x00, 0x00 // first element is not to be changed as it is defined by MAC protocol
 };
-
-unsigned long currentMillis;
-
-char packetBuffer[BUFFER_SIZE]; // buffer to hold incoming packet,
+char packetBuffer[BUFFER_SIZE]; // buffer to hold incoming UDP packet
 StaticJsonDocument<BUFFER_SIZE> doc;
 Messenger messenger(&Serial);
 
 void setup()
 {
-
   messenger.init(BAUD_SPEED);
   messenger.sendInfo("Ethersweep " + version);
 
-  pinMode(STEP_PIN, OUTPUT);
-  pinMode(DIR_PIN, OUTPUT);
-  pinMode(ENABLE_PIN, OUTPUT);
-
-  pinMode(M0_PIN, OUTPUT);
-  pinMode(M1_PIN, OUTPUT);
-  pinMode(LED_PIN, OUTPUT);
-
-  pinMode(DIAG_PIN, INPUT);
-  pinMode(END_STOP_PIN, INPUT);
-  pinMode(E_STOP_PIN, INPUT);
-
-  digitalWrite(STEP_PIN, LOW);
-
   if (!sensorManager.startUpCheck())
   {
-    messenger.sendError(F("Sensors fail"));
+    messenger.sendError(F("Sensor fail"));
   }
   else
   {
@@ -113,17 +85,13 @@ void setup()
   motor.disableMotor();
 
   Serial.setTimeout(10);
+
   if (Serial.available() > 0)
   {
     usbActive = true;
-    connectionMode = "USB ";
+    connectionMode = USB;
   }
   else
-  {
-    usbActive = false;
-  }
-
-  if (!usbActive)
   {
 #if STATIC_IP
     Ethernet.begin(mac, ip);
@@ -186,11 +154,10 @@ void loop()
     }
   }
 
-  currentMillis = millis();
-  if (currentMillis - previousMillis >= DISPLAY_REFRESH)
+  if (millis() - previousMillis >= DISPLAY_REFRESH_TIME)
   {
     display.drawDisplay();
-    previousMillis = currentMillis;
+    previousMillis = millis();
   }
 
   if (!sensorManager.getJobState())

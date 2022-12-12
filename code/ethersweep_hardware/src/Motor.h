@@ -19,6 +19,7 @@ private:
     SensorManager *sensor;
     Display *display;
 
+    void init();
 
 public:
     Motor(SensorManager *sensor, Display *display, byte stepPin, byte dirPin, byte enablePin, byte m0Pin, byte m1Pin, byte ledPin);

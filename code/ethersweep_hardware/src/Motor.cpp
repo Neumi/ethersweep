@@ -10,8 +10,24 @@ Motor::Motor(SensorManager *sensor, Display *display, byte stepPin, byte dirPin,
     this->m0Pin = m0Pin;
     this->m1Pin = m1Pin;
     this->ledPin = ledPin;
+
+    init();
 }
 
+// inits all outputs.
+void Motor::init()
+{
+    pinMode(this->stepPin, OUTPUT);
+    pinMode(this->dirPin, OUTPUT);
+    pinMode(this->enablePin, OUTPUT);
+    pinMode(this->m0Pin, OUTPUT);
+    pinMode(this->m1Pin, OUTPUT);
+    pinMode(this->ledPin, OUTPUT);
+
+    digitalWrite(this->stepPin, LOW);
+}
+
+// sets step mode. options are half, quater, eigth and sixteenth step mode.
 void Motor::setStepMode(byte mode)
 {
     // sets TMC2208 step modes: full step to 1/16 step mode
@@ -41,6 +57,7 @@ void Motor::setStepMode(byte mode)
     }
 }
 
+// drives motor a certain number of steps.
 void Motor::driveMotor(int motorSteps, int motorSpeed, bool motorDirection, byte motorStepMode, bool hold)
 {
     this->display->drawDisplay();
@@ -79,6 +96,7 @@ void Motor::driveMotor(int motorSteps, int motorSpeed, bool motorDirection, byte
     digitalWrite(this->ledPin, LOW);
 }
 
+// ramps motor to speed. Ramp of 10 % means 5% acceleration, 90% running full speed and 5% decelleration.
 void Motor::rampMotor(int motorSteps, int motorSpeed, int motorSlope, bool motorDirection, byte motorStepMode, bool hold)
 {
     this->display->drawDisplay();
@@ -128,6 +146,7 @@ void Motor::rampMotor(int motorSteps, int motorSpeed, int motorSlope, bool motor
     digitalWrite(this->ledPin, LOW);
 }
 
+// homes motor until endstop is pressed. After first End Stop hit, moves back and tries again slower.
 void Motor::homeMotor(int motorSteps, int motorSpeed, bool motorDirection, byte motorStepMode, bool hold)
 {
     int homingState = 0;
@@ -156,12 +175,14 @@ void Motor::homeMotor(int motorSteps, int motorSpeed, bool motorDirection, byte 
     }
 }
 
+// disbales motor
 void Motor::disableMotor()
 {
     digitalWrite(this->enablePin, HIGH); // motor disabled
     this->motorEnabled = false;
 }
 
+// enables motor
 void Motor::enableMotor()
 {
     if (!this->eStopActive)
@@ -175,6 +196,7 @@ void Motor::enableMotor()
     }
 }
 
+// power cycles motor controller
 void Motor::powerCycleMotor()
 {
     this->disableMotor();

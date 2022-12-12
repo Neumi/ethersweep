@@ -13,6 +13,8 @@ private:
     boolean jobDone;
     AMS_5600 *ams5600;
 
+    void init();
+
 public:
     float voltage;
     float angle;
