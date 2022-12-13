@@ -28,12 +28,19 @@ void test_display_interaction()
 {
 #define OLED_I2C_ADDRESS 0x3C
   oled.begin(&Adafruit128x32, OLED_I2C_ADDRESS);
-  oled.setFont(Adafruit5x7);
-  oled.println("set2wX");
-  int returnValue = oled.println("display test");
-  delay(100);
+  oled.set1X();
+  oled.setFont(System5x7);
   oled.clear();
-  TEST_ASSERT_EQUAL(14, returnValue);
+  oled.println("ethersweep    v" + version);
+  oled.println("");
+  oled.println("");
+  int returnValue = oled.print("running tests...");
+  TEST_ASSERT_EQUAL(16, returnValue);
+}
+
+void display_done()
+{
+  oled.print("done");
 }
 
 void test_i2c_addresses()
@@ -167,10 +174,10 @@ void test_ethernet_hardware_check()
   // 0 = no cable
   // 1 = functional hardware + connected cable
   // 2 == no hardware
-  TEST_ASSERT_EQUAL(1, result);
+  TEST_ASSERT_LESS_OR_EQUAL(1, result);
 }
 
-void test_motor_driver_quater_turn_left()
+double run_motor_quater_revolution(boolean direction)
 {
   int enablePin = 5;
   int stepPin = 7;
@@ -193,6 +200,7 @@ void test_motor_driver_quater_turn_left()
   digitalWrite(m1Pin, HIGH);
 
   digitalWrite(enablePin, LOW); // enables motor
+  digitalWrite(dirPin, direction);
 
   double startNormalizedAngle = (ams5600.getRawAngle() * 360.0) / 4096.0;
 
@@ -207,16 +215,48 @@ void test_motor_driver_quater_turn_left()
 
   double endNormalizedAngle = (ams5600.getRawAngle() * 360.0) / 4096.0;
   double angleOffset = 0.0;
+  double angleDifference;
 
-  if (startNormalizedAngle < 100)
+  if (direction == 1)
   {
-    angleOffset = 90.0;
+    // right direction
+    if (startNormalizedAngle > 270)
+    {
+      angleDifference = abs((startNormalizedAngle - 270.0) - (endNormalizedAngle + 90.0));
+    }
+    else
+    {
+      angleDifference = endNormalizedAngle - startNormalizedAngle;
+    }
   }
-  double angleDifference = abs((endNormalizedAngle - angleOffset) - (startNormalizedAngle + angleOffset));
+  else
+  {
+    // left direction
+    if (startNormalizedAngle < 90)
+    {
+      angleDifference = abs((endNormalizedAngle - 90.0) - (startNormalizedAngle + 90.0));
+    }
+    else
+    {
+      angleDifference = startNormalizedAngle - endNormalizedAngle;
+    }
+  }
 
-  Serial.println(angleDifference);
-  Serial.println(startNormalizedAngle);
-  Serial.println(endNormalizedAngle);
+  return angleDifference;
+}
+
+void test_motor_driver_quater_turn_left()
+{
+  double angleDifference = run_motor_quater_revolution(0);
+
+  TEST_ASSERT_GREATER_OR_EQUAL(89.0, angleDifference);
+  TEST_ASSERT_LESS_OR_EQUAL(91.0, angleDifference);
+}
+
+void test_motor_driver_quater_turn_right()
+{
+  double angleDifference = run_motor_quater_revolution(1);
+
   TEST_ASSERT_GREATER_OR_EQUAL(89.0, angleDifference);
   TEST_ASSERT_LESS_OR_EQUAL(91.0, angleDifference);
 }
@@ -225,26 +265,24 @@ void setup()
 {
   delay(200);
 
-  pinMode(LED_BUILTIN, OUTPUT);
-
   UNITY_BEGIN();
 
+  RUN_TEST(test_display_i2c);
   RUN_TEST(test_status_led);
   RUN_TEST(test_i2c_addresses);
-  RUN_TEST(test_encoder_i2c);
-  RUN_TEST(test_display_i2c);
   RUN_TEST(test_display_interaction);
+  RUN_TEST(test_encoder_i2c);
   RUN_TEST(test_encoder_presence);
   RUN_TEST(test_encoder_magent_strengh);
   RUN_TEST(test_encoder_sanity);
   RUN_TEST(test_voltage_sanity);
   RUN_TEST(test_end_stop_pin);
-
   RUN_TEST(test_ethernet_hardware_check);
-
   RUN_TEST(test_motor_driver_quater_turn_left);
+  RUN_TEST(test_motor_driver_quater_turn_right);
 
   UNITY_END();
+  display_done();
 }
 
 void loop()
