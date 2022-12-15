@@ -22,14 +22,12 @@ private:
     float lastEncoderAngle;
     float lastVoltage;
 
-    String connectionMode;
-
     SensorManager *sensor;
     SSD1306AsciiAvrI2c *oled;
     Connection *connection;
 
 public:
-    Display(SensorManager *sensor, SSD1306AsciiAvrI2c *oled, Connection *connection, String connectionMode);
+    Display(SensorManager *sensor, SSD1306AsciiAvrI2c *oled, Connection *connection);
     void getData();
     void drawDisplay();
     void setupDisplay();

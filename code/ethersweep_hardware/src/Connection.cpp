@@ -8,6 +8,7 @@ Connection::Connection(byte randomSeedPin)
     randomSeed(analogRead(randomSeedPin));
 }
 
+// checks if MAC address is already written in EEPROM
 bool Connection::checkMacAddress()
 {
     for (int i = 1; i <= 5; i++)
@@ -23,6 +24,7 @@ bool Connection::checkMacAddress()
     return this->macUnwritten;
 }
 
+// generates randomized MAC address and writes to EEPROM
 void Connection::generateNewMacEeprom()
 {
     for (int i = 1; i <= 5; i++)
@@ -31,15 +33,7 @@ void Connection::generateNewMacEeprom()
     }
 }
 
-int *Connection::getMac()
-{
-    if (checkMacAddress())
-    {
-        generateNewMacEeprom();
-    }
-    return this->mac;
-}
-
+// clears EEPROM, only used for debugging
 void Connection::clearMac()
 {
     for (int i = 1; i <= 5; i++)
@@ -49,6 +43,17 @@ void Connection::clearMac()
     this->macUnwritten = true;
 }
 
+// returns MAC address, generates new if not existing
+int *Connection::getMac()
+{
+    if (checkMacAddress())
+    {
+        generateNewMacEeprom();
+    }
+    return this->mac;
+}
+
+// sets connection mode, DHCP, STATIC or USB
 void Connection::setConnectionMode(String connectionMode)
 {
     this->connectionMode = connectionMode;

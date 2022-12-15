@@ -1,12 +1,11 @@
 #include "Display.h"
 #include "Configuration.h"
 
-Display::Display(SensorManager *sensor, SSD1306AsciiAvrI2c *oled, Connection *connection, String connectionMode)
+Display::Display(SensorManager *sensor, SSD1306AsciiAvrI2c *oled, Connection *connection)
 {
     this->sensor = sensor;
     this->oled = oled;
     this->connection = connection;
-    this->connectionMode = connectionMode;
 }
 
 // reads and gets data from sensor
@@ -116,7 +115,7 @@ void Display::initializeDisplay(IPAddress address)
     this->oled->setFont(System5x7);
     this->oled->clear();
     this->oled->println("ethersweep    v" + version);
-    this->oled->println("00.0V | " + this->connectionMode + " | 000.0°");
+    this->oled->println("00.0V | " + this->connection->connectionMode + " | 000.0°");
     this->oled->println(F("END   | STOP |  ACT"));
     this->oled->println("IP: " + this->formatAddress(address));
 }

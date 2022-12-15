@@ -28,7 +28,7 @@ IPAddress ip(0, 0, 0, 0);
 
 SensorManager sensorManager(&ams5600, E_STOP_PIN, END_STOP_PIN, DIAG_PIN, FAULT_PIN, VOLT_DETECT_PIN);
 Connection connection(RANDOM_SEED_PIN);
-Display display(&sensorManager, &oled, &connection, connectionMode);
+Display display(&sensorManager, &oled, &connection);
 Motor motor(&sensorManager, &display, STEP_PIN, DIR_PIN, ENABLE_PIN, M0_PIN, M1_PIN, LED_PIN);
 EthernetUDP Udp;
 
@@ -68,16 +68,17 @@ Messenger messenger(&Serial);
 
 void setup()
 {
+  connection.setConnectionMode(connectionMode);
   messenger.init(BAUD_SPEED);
   messenger.sendInfo("Ethersweep " + version);
 
-  if (!sensorManager.startUpCheck())
+  if (sensorManager.startUpCheck())
   {
-    messenger.sendError(F("Sensor fail"));
+    messenger.sendInfo(F("Sensors OK"));
   }
   else
   {
-    messenger.sendInfo(F("Sensors OK"));
+    messenger.sendError(F("Sensor fail"));
   }
 
   connection.getMac();
