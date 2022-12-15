@@ -3,8 +3,6 @@
 class Connection
 {
 private:
-    int mac[6] = {222, 0, 0, 0, 0, 0}; // first number is fixed in mac address space
-
     bool macUnwritten = true;
 
     bool checkMacAddress();
@@ -13,9 +11,10 @@ private:
 
 public:
     String connectionMode = "none";
-    
+    byte mac[6] = {222, 0, 0, 0, 0, 0}; // first number is fixed in mac address space
+
     Connection(byte randomSeedPin);
 
-    int *getMac();
+    byte *getMac();
     void setConnectionMode(String connectionMode);
 };

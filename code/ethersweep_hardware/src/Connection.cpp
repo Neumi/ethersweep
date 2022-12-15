@@ -13,7 +13,7 @@ bool Connection::checkMacAddress()
 {
     for (int i = 1; i <= 5; i++)
     {
-        int EEPROMvalue = EEPROM.read(i);
+        byte EEPROMvalue = EEPROM.read(i);
         this->mac[i] = EEPROMvalue;
         if (EEPROMvalue != 255)
         {
@@ -44,7 +44,7 @@ void Connection::clearMac()
 }
 
 // returns MAC address, generates new if not existing
-int *Connection::getMac()
+byte *Connection::getMac()
 {
     if (checkMacAddress())
     {

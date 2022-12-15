@@ -15,8 +15,6 @@
 #include "Display.h"
 #include "Messenger.h"
 
-SSD1306AsciiAvrI2c oled;
-AMS_5600 ams5600;
 
 #if STATIC_IP
 String connectionMode = STAT;
@@ -26,45 +24,30 @@ String connectionMode = DHCP;
 IPAddress ip(0, 0, 0, 0);
 #endif
 
+SSD1306AsciiAvrI2c oled;
+AMS_5600 ams5600;
 SensorManager sensorManager(&ams5600, E_STOP_PIN, END_STOP_PIN, DIAG_PIN, FAULT_PIN, VOLT_DETECT_PIN);
 Connection connection(RANDOM_SEED_PIN);
 Display display(&sensorManager, &oled, &connection);
 Motor motor(&sensorManager, &display, STEP_PIN, DIR_PIN, ENABLE_PIN, M0_PIN, M1_PIN, LED_PIN);
+Messenger messenger(&Serial);
 EthernetUDP Udp;
 
 int driveMode = 0;
 int motorSpeed = 0;
 int motorSlope = 0;
 int motorSteps = 0;
-boolean motorDirection = 0;
 byte motorStepMode = 0;
-boolean motorHold = 0;
+boolean motorDirection = false;
+boolean motorHold = false;
 
-boolean endStopped = false;
-
-boolean eStopActive = false;
-boolean endStopPressed = false;
-boolean motorEnabled = false;
-
-boolean eStopActiveLast = false;
-boolean endStopPressedLast = false;
 boolean usbActive = false;
 
 unsigned long previousMillis;
-unsigned long currentMillis;
-
-const byte macEepromStartAddress = 1; // has to be one, because first MAC address element is not to be changed
-const byte macEepromEndAddress = 5;
-boolean macUnwritten = true;
-
 
 // ETHERNET & UDP
-byte mac[] = {
-    0xDE, 0x00, 0x00, 0x00, 0x00, 0x00 // first element is not to be changed as it is defined by MAC protocol
-};
 char packetBuffer[BUFFER_SIZE]; // buffer to hold incoming UDP packet
 StaticJsonDocument<BUFFER_SIZE> doc;
-Messenger messenger(&Serial);
 
 void setup()
 {
@@ -95,7 +78,7 @@ void setup()
   else
   {
 #if STATIC_IP
-    Ethernet.begin(mac, ip);
+    Ethernet.begin(connection.mac, ip);
     if (Ethernet.hardwareStatus() == EthernetNoHardware)
     {
       messenger.sendError(F("Ethernet error"));
@@ -106,7 +89,7 @@ void setup()
     }
     messenger.sendInfo(F("Ethernet OK"));
 #else
-    if (Ethernet.begin(mac) == 0)
+    if (Ethernet.begin(connection.mac) == 0)
     {
       if (Ethernet.hardwareStatus() == EthernetNoHardware)
       {
@@ -116,7 +99,7 @@ void setup()
       {
         messenger.sendError(F("Ethernet no link"));
       }
-      Ethernet.begin(mac, ip);
+      Ethernet.begin(connection.mac, ip);
     }
     else
     {
