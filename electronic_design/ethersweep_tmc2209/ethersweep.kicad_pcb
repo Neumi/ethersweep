@@ -3217,7 +3217,7 @@
       (net 13 "RST_ETHERNET") (pinfunction "Pin_5") (pintype "passive") (tstamp c2489de4-0568-47bf-ad98-d6ef588169e2))
     (pad "6" thru_hole oval (at 0 12.7 270) (size 1.7 1.7) (drill 1) (layers *.Cu *.Mask)
       (net 31 "ETH_INT") (pinfunction "Pin_6") (pintype "passive") (tstamp bb96f5f0-b2f8-47a0-ad6c-58b0b7808afc))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x06_P2.54mm_Vertical.wrl"
+    (model "${KICAD6_3DMODEL_DIR}/Connector_PinSocket_2.54mm.3dshapes/PinSocket_1x06_P2.54mm_Vertical.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
