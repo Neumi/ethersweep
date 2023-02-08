@@ -14,7 +14,7 @@ Ethersweep offers easy interfacing from computers/machines/backends to motion co
 
 It gets an IP address from a DHCP server and shows data like IP, operating voltage, button and operation states on the OLED display.
 
-<img alt="PCB Photo" src="/img/3d_side.png">
+<img alt="PCB Photo" src="/img/pcb_top_v4.png">
 
 
 
@@ -52,12 +52,10 @@ Once connected to power and Ethernet, it serarches for an IP address using DHCP.
 Now you can use the Python script to control the motor.
 
 
-![PCB raw B](/img/3d_bottom.png)
-![PCB raw B](/img/3d_top.png)
+![PCB raw B](/img/ETHERSWEEP4.png)
 ![animation](/img/animation.gif)
 ![cad 2](/img/cad2.png)
-![pcb layout](/img/pcb_layout.png)
-
+![pcb layout](/img/layout_top_v4.png)
 ![pcb layout](/img/component_overview.png)
 
 ## Using Python to control a stepper motor:
