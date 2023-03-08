@@ -1,5 +1,0 @@
-Ref,Val,Package,PosX,PosY,Rot,Side
-"J3","Conn_01x04_Female","PinHeader_1x04_P2.54mm_Vertical",-135.550000,-29.830000,180.000000,bottom
-"J8","AVR-ISP-6","IDC-Header_2x03_P2.54mm_Vertical",-160.550000,-21.130000,0.000000,bottom
-"SW1","SW_Push","SW_Push_SPST_NO_Alps_SKRK",-153.100000,-18.180000,180.000000,bottom
-"U5","AS5600","AS5600",-194.050000,-33.630000,0.000000,bottom
