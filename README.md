@@ -56,7 +56,7 @@ Now you can use the Python script to control the motor.
 
 ![PCB raw B](/img/ETHERSWEEP4.png)
 ![animation](/img/animation.gif)
-![cad 2](/img/cad2.png)
+![cad rotation](/img/rotation/animation.gif)
 ![pcb layout](/img/layout_top_v4.png)
 ![pcb layout](/img/component_overview.png)
 
