@@ -1,3 +1,0 @@
-(sym_lib_table
-  (lib (name ethersweep-rescue)(type Legacy)(uri ${KIPRJMOD}/ethersweep-rescue.lib)(options "")(descr ""))
-)
