@@ -12,7 +12,7 @@ https://drive.google.com/drive/folders/1qrk8QeEkzJ8hkr-H0x3y7xxhLTKhMb_F?usp=sha
     
 > *NEWS NOTE:*  Ethersweep is a project that is still in development. If you plan to order boards for yourself, you can do so, but expect it to take some work to get everything running! If you have any question, please write me on Discord: https://discord.com/invite/rerCyqAcrw or
 LinkedIn: https://www.linkedin.com/in/neumi/
-The latest running version is in the [production](electronic_design/production) directory. It is still an Atmega328 and TMC2208 stepper driver. The latest [development](electronic_design/development) version had some issues and currently gets a redesign with STM32 and TMC2209. Stay tuned for that!
+The latest running version is in the [production](electronic_design/production) directory. It is still an Atmega328 and TMC2208 stepper driver. The latest [development](electronic_design/development) version had some issues and currently gets a redesign with STM32 and TMC2209. Stay tuned for that! The latest development version was sent to manufacturing on 25.05.2023 and still needs validation.
     
     
 
