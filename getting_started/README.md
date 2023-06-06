@@ -8,6 +8,7 @@ The code is compiled and uploaded using the Arduino IDE with stm32duino installe
 to the Arduino IDE board manager)
 
 Set these settings under 'Tools' in the Arduino IDE:
+![Board settings STM32 Ethersweep](./img/board_settings_STM32.png)
 
 
 
