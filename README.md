@@ -3,18 +3,19 @@
 # Ethersweep
 ### An Open Source Ethernet controllable stepper motor. Easy interfacing with JSON and UDP from any device on the network in any language you choose.
 
-*As there is quite some interest in buying a controller, please contact me via ethersweep@inprocess.xyz. The cost for one controller is currently around 150€ for an assembled + tested version and 90€ for a kit that needs some soldering. Plus shipping from Germany. Unfortunately we're out of stock and due to supplychain issues we are not able to get new controllers before january 2023. But you can, of course, try to order the parts on your own! (please see https://hackaday.io/project/187187/components)*
+*As there is quite some interest in buying a controller, please contact me via ethersweep@inprocess.xyz. But you can, of course, order the parts on your own and build the controller yourself! (please see https://hackaday.io/project/187187/components)*
 
 More media/press material:
 https://drive.google.com/drive/folders/1qrk8QeEkzJ8hkr-H0x3y7xxhLTKhMb_F?usp=share_link
 
     
     
-> *NEWS NOTE:*  Ethersweep is a project that is still in development. If you plan to order boards for yourself, you can do so, but expect it to take some work to get everything running! If you have any question, please write me on Discord: https://discord.com/invite/rerCyqAcrw or
+> *NEWS NOTE:*  Ethersweep is a project that is still in development. If you plan to order boards for yourself, you can do so, but expect it to take some work to get everything running! If you have any questions, please write me on Discord: https://discord.com/invite/rerCyqAcrw or
 LinkedIn: https://www.linkedin.com/in/neumi/
-The latest running version is in the [production](electronic_design/production) directory. It is still an Atmega328 and TMC2208 stepper driver. The latest [development](electronic_design/development) version had some issues and currently gets a redesign with STM32 and TMC2209. Stay tuned for that! The latest development version was sent to manufacturing on 25.05.2023 and still needs validation.
-    
-    
+If you need custom assemblies, code or have a special use case in mind, reach out to me.
+The latest running version is in the [production](electronic_design/production) directory. It is still an Atmega328 and TMC2208 stepper driver. 
+The project shifts from Atmega328 to STM32. Therfore there are a lot of changes going on. Check out the latest [development](electronic_design/development/ethersweep405) and [development code](code/ethersweep_STM32_450) version! The boards are functional and the old code was adapted to run on STM32! Therefore I will start writing new features on the new STM32 + TMC2209 platform only.
+
 
 <img alt="linear axis" src="/img/linear_axis.png">
 
