@@ -30,18 +30,10 @@ void Motor::init()
 // sets step mode. options are half, quater, eigth and sixteenth step mode.
 void Motor::setStepMode(byte mode)
 {
-    // sets TMC2208 step modes: full step to 1/16 step mode
     switch (mode)
     {
-    // MS0, MS1: 10: 1/2, 01: 1/4, 00: 1/8, 11: 1/16
-    case 2:
-        digitalWrite(this->m0Pin, HIGH);
-        digitalWrite(this->m1Pin, LOW);
-        break;
-    case 4:
-        digitalWrite(this->m0Pin, LOW);
-        digitalWrite(this->m1Pin, HIGH);
-        break;
+    // TMC2208 MS0, MS1: 10: 1/2, 01: 1/4, 00: 1/8, 11: 1/16
+    // TMC2209 M1, M0: 00: 1/8, 01: 1/32, 10: 1/64 11: 1/16
     case 8:
         digitalWrite(this->m0Pin, LOW);
         digitalWrite(this->m1Pin, LOW);
@@ -50,8 +42,16 @@ void Motor::setStepMode(byte mode)
         digitalWrite(this->m0Pin, HIGH);
         digitalWrite(this->m1Pin, HIGH);
         break;
-    default:
+    case 32:
         digitalWrite(this->m0Pin, HIGH);
+        digitalWrite(this->m1Pin, LOW);
+        break;
+    case 64:
+        digitalWrite(this->m0Pin, LOW);
+        digitalWrite(this->m1Pin, HIGH);
+        break;
+    default: // defaults to 1/64
+        digitalWrite(this->m0Pin, LOW);
         digitalWrite(this->m1Pin, HIGH);
         break;
     }
