@@ -103,3 +103,6 @@ Follow the project on hackaday.io: https://hackaday.io/project/187187-ethersweep
 - [ ] (state) response to sender
 - [ ] µC upgrade to STM32f103
 - [ ] TMC2209 upgrade
+
+## Big thanks to the sponsors of this project!
+![sponsor_banner](/img/sponsoring_banner.png)
