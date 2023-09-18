@@ -12,20 +12,22 @@ const String version = "3.5.1"; // software version
 
 #define OLED_I2C_ADDRESS 0x3C // i2c address of oled display
 
-#define BUFFER_SIZE 128 // communication buffer size
+#define BUFFER_SIZE 256 // communication buffer size
 
 #define DISPLAY_REFRESH_TIME 100 // milliseconds until new data is shown
 
 #define LOCAL_PORT 8888 // local UDP port
 
-#define REMOTE_PORT 8889 // remote machines receiving UDP port
+#define STANDARD_REMOTE_SENSOR_PORT 5000 // remote machines receiving UDP port
 
-// drivemode definitions
+
+// action definitions
 #define STEPS 0      // runs certain ammounts of steps
 #define HOME 1       // homes until endstop is reached
 #define RAMP 2       // ramps motor with certain slope
 #define POWERCYCLE 3 // power cycles motor controller
-
+#define POSITION 4   // encoder feedback position loop
+#define SENSORFEEDBACK 5 // sends sensor values to IP and PORT
 
 // W5500 ethernet chip
 #define SLEEP_PIN PB0 // ethernet int
@@ -36,8 +38,8 @@ const String version = "3.5.1"; // software version
 #define ENABLE_PIN PB8
 #define STEP_PIN PB15
 #define DIR_PIN PA8
-#define M0_PIN PB4
-#define M1_PIN PB3
+#define M0_PIN PB4 // MS1
+#define M1_PIN PB3 // MS2
 #define DIAG_PIN PA15
 #define FAULT_PIN PA14
 

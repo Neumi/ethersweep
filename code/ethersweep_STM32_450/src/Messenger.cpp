@@ -19,3 +19,11 @@ void Messenger::sendInfo(String message)
 {
     this->serialInterface->println("\033[1;32m" + message + "\033[0m");
 }
+
+void Messenger::sendUDPMessage(IPAddress ip, int remotePort, String message, EthernetUDP udp)
+{  
+  // Send the UDP message to the specified IP and port
+  udp.beginPacket(ip, remotePort);
+  udp.print(message);
+  udp.endPacket();
+}

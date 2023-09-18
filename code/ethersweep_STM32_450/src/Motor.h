@@ -27,6 +27,8 @@ public:
     void driveMotor(int motorSteps, int motorSpeed, bool motorDirection, byte motorStepMode, bool hold);
     void rampMotor(int motorSteps, int motorSpeed, int motorSlope, bool motorDirection, byte motorStepMode, bool hold);
     void homeMotor(int motorSteps, int motorSpeed, bool motorDirection, byte motorStepMode, bool hold);
+    void positionMotor(double degrees);
+    void sensorFeedback(IPAddress ip, int port, Messenger messenger, EthernetUDP udp);
     void disableMotor();
     void enableMotor();
     void powerCycleMotor();

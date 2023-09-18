@@ -26,20 +26,25 @@ IPAddress ip(0, 0, 0, 0);
 
 SSD1306AsciiWire oled;
 AMS_5600 ams5600;
+EthernetUDP Udp;
+
 SensorManager sensorManager(&ams5600, E_STOP_PIN, END_STOP_PIN, DIAG_PIN, FAULT_PIN, VOLT_DETECT_PIN);
 Connection connection(RANDOM_SEED_PIN);
 Display display(&sensorManager, &oled, &connection);
 Motor motor(&sensorManager, &display, STEP_PIN, DIR_PIN, ENABLE_PIN, M0_PIN, M1_PIN, LED_PIN);
 Messenger messenger(&Serial1);
-EthernetUDP Udp;
 
-int driveMode = 0;
+
+int action = 0;
 int motorSpeed = 0;
 int motorSlope = 0;
 int motorSteps = 0;
 byte motorStepMode = 0;
 bool motorDirection = false;
 bool motorHold = false;
+
+IPAddress sensorDestinationIp(0, 0, 0, 0);     // IP to send sensor data to
+int sensorPort = STANDARD_REMOTE_SENSOR_PORT;
 
 bool usbActive = false;
 
@@ -156,7 +161,7 @@ void loop()
     }
     else
     {
-      driveMode = doc["drivemode"];
+      action = doc["mode"];
       motorSteps = doc["steps"];
       motorSpeed = doc["speed"];
       motorSlope = doc["slope"];
@@ -164,7 +169,19 @@ void loop()
       motorStepMode = doc["stepmode"];
       motorHold = doc["hold"];
 
-      switch (driveMode)
+      if (doc.containsKey("port")) {
+        sensorPort = doc["port"];
+      }
+      
+      if (doc.containsKey("ip")) {
+        const char* ipAddressStr = doc["ip"];
+        sensorDestinationIp.fromString(ipAddressStr);
+      }
+      else {
+        sensorDestinationIp = Udp.remoteIP();
+      }
+
+      switch (action)
       {
       case STEPS:
         motor.driveMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
@@ -175,6 +192,12 @@ void loop()
       case RAMP:
         motor.rampMotor(motorSteps, motorSpeed, motorSlope, motorDirection, motorStepMode, motorHold);
         break;
+      case POSITION:
+        // TO DO
+        break;
+      case SENSORFEEDBACK:
+        motor.sensorFeedback(sensorDestinationIp, sensorPort, messenger, Udp);
+        break;
       case POWERCYCLE:
         motor.powerCycleMotor();
         break;
@@ -184,3 +207,4 @@ void loop()
     sensorManager.setJobState(true);
   }
 }
+

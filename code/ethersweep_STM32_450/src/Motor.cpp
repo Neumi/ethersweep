@@ -1,4 +1,7 @@
 #include "Motor.h"
+#include <ArduinoJson.h>
+
+
 
 Motor::Motor(SensorManager *sensor, Display *display, byte stepPin, byte dirPin, byte enablePin, byte m0Pin, byte m1Pin, byte ledPin)
 {
@@ -175,7 +178,29 @@ void Motor::homeMotor(int motorSteps, int motorSpeed, bool motorDirection, byte 
     }
 }
 
-// disbales motor
+// sends sensor data to ip, port
+void Motor::sensorFeedback(IPAddress ip, int port, Messenger messenger, EthernetUDP udp) {
+    const size_t capacity = 256;
+    DynamicJsonDocument jsonDoc(capacity);
+
+    // Populate JSON object with sensor data
+    jsonDoc["eStop"] = this->sensor->getEmergencyStopState();
+    jsonDoc["endStop"] = this->sensor->getEndStopState();
+    jsonDoc["motorDiagnose"] = this->sensor->getMotorDriverDiagnose();
+    jsonDoc["motorFailure"] = this->sensor->getMotorDriverFailure();
+    jsonDoc["jobState"] = this->sensor->getJobState();
+    jsonDoc["angle"] = this->sensor->getAngle();
+    jsonDoc["voltage"] = this->sensor->getVoltage();
+
+    String message;
+    serializeJson(jsonDoc, message);
+
+    // sends UDP message
+    messenger.sendUDPMessage(ip, port, message, udp);
+
+}
+
+// disables motor
 void Motor::disableMotor()
 {
     digitalWrite(this->enablePin, HIGH); // motor disabled
