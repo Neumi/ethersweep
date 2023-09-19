@@ -29,7 +29,7 @@ void Display::drawDisplay()
     {
         this->oled->clearField(0, 1, 4);
         // if (voltage < 10.0) oled.print("");
-        this->oled->print(voltage, 1);
+        this->oled->print(voltage / 1000, 1);
     }
 
     // encoder angle display

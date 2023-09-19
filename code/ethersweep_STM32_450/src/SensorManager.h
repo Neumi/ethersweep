@@ -18,7 +18,7 @@ private:
     void init();
 
 public:
-    float voltage;
+    int voltage;
     float angle;
     bool magnet;
     bool emergencyStop;
@@ -29,7 +29,7 @@ public:
 
     SensorManager(AMS_5600 *ams5600, byte eStopPin, byte endStopPin, byte diagPin, byte faultPin, byte voltDetectPin);
     void readSensorValues();
-    float getVoltage();
+    int getVoltage();
     float getAngle();
     bool startUpCheck(Messenger messenger);
     bool checkMagnet();

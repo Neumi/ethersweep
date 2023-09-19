@@ -65,9 +65,10 @@ bool SensorManager::startUpCheck(Messenger messenger)
     return true;
 }
 
-float SensorManager::getVoltage()
+// return voltage in millivolts
+int SensorManager::getVoltage()
 {
-    float vin = (analogRead(this->voltDetectPin) * 3.3) / 1024.0 / (1.0 / 11.0);
+    int vin = (analogRead(this->voltDetectPin) * 3.3) / 1024.0 / (1.0 / 11.0) * 1000;
     return vin;
 }
 
