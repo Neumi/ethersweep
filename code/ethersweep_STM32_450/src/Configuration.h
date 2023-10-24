@@ -28,6 +28,7 @@ const String version = "3.5.1"; // software version
 #define POWERCYCLE 3 // power cycles motor controller
 #define POSITION 4   // encoder feedback position loop
 #define SENSORFEEDBACK 5 // sends sensor values to IP and PORT
+#define HEARTBEAT 6 // sends heartbeat answer values to IP and PORT
 
 // W5500 ethernet chip
 #define SLEEP_PIN PB0 // ethernet int

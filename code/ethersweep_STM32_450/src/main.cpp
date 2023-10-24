@@ -42,6 +42,7 @@ int motorSteps = 0;
 byte motorStepMode = 0;
 bool motorDirection = false;
 bool motorHold = false;
+double degrees = 0.0;
 
 IPAddress sensorDestinationIp(0, 0, 0, 0);     // IP to send sensor data to
 int sensorPort = STANDARD_REMOTE_SENSOR_PORT;
@@ -169,6 +170,10 @@ void loop()
       motorStepMode = doc["stepmode"];
       motorHold = doc["hold"];
 
+      if (doc.containsKey("degrees")) {
+        degrees = doc["degrees"];
+      }
+
       if (doc.containsKey("port")) {
         sensorPort = doc["port"];
       }
@@ -193,10 +198,13 @@ void loop()
         motor.rampMotor(motorSteps, motorSpeed, motorSlope, motorDirection, motorStepMode, motorHold);
         break;
       case POSITION:
-        // TO DO
+        motor.positionMotor(degrees);
         break;
       case SENSORFEEDBACK:
         motor.sensorFeedback(sensorDestinationIp, sensorPort, messenger, Udp);
+        break;
+      case HEARTBEAT:
+        motor.sendHeartbeat(sensorDestinationIp, sensorPort, messenger, Udp);
         break;
       case POWERCYCLE:
         motor.powerCycleMotor();
