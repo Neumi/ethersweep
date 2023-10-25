@@ -1,1 +1,6 @@
-electronic_design/ethersweep/ethersweep-backups/*
+/electronic_design/*/ethersweep-backups/*
+electronic_design/development/ethersweep406/ethersweep-backups/*
+electronic_design/development/ethersweep_tmc2209/ethersweep-backups/*
+electronic_design/development/ethersweep406/ethersweep-backups/*.zip
+/electronic_design/production/.DS_Store
+*.DS_Store
