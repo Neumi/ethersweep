@@ -4,8 +4,8 @@ import json
 
 UDP_SEND_PORT = 8888
 
-server_ip = "0.0.0.0"  # Replace with the appropriate IP address
-server_port = 5000  # Replace with the appropriate port
+server_ip = "0.0.0.0"
+server_port = 5000
 
 
 async def task1():

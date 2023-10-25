@@ -3,11 +3,11 @@ import socket
 import json
 import os
 
-UDP_SEND_IP_MOTOR = "192.168.1.176"
+UDP_SEND_IP_MOTOR = "192.168.1.176" # change to Ethersweep IP
 UDP_SEND_PORT = 8888
 
-server_ip = "0.0.0.0"  # Replace with the appropriate IP address
-server_port = 5000  # Replace with the appropriate port
+server_ip = "0.0.0.0"
+server_port = 5000 # standard feedback port (might be changed)
 
 async def task1():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

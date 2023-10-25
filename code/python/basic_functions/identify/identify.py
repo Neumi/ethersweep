@@ -1,16 +1,15 @@
 import socket
 import json
 
-UDP_SEND_IP_MOTOR = "192.168.1.207"
+UDP_SEND_IP_MOTOR = "192.168.1.207" # change to Etehrsweep IP
 UDP_SEND_PORT = 8888
 
 
 message = json.dumps(
         {
             'mode': 7,
-            # 'degrees': 123.9
-            # 'ip': '192.168.1.232',
-            # 'port': 5000,
+            # 'ip': '192.168.1.232', # feedback IP (optional)
+            # 'port': 5000, # feedback port (optional)
         }
     ).encode()
 
