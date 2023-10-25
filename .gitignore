@@ -1,1 +1,9 @@
-electronic_design/ethersweep/ethersweep-backups/*
+/electronic_design/*/ethersweep-backups/*
+electronic_design/development/ethersweep406/ethersweep-backups/*
+electronic_design/development/ethersweep_tmc2209/ethersweep-backups/*
+electronic_design/development/ethersweep406/ethersweep-backups/*.zip
+/electronic_design/production/.DS_Store
+*.DS_Store
+.idea/
+code/ethersweep_STM32_450/.vscode/
+electronic_design/development/ethersweep407_CAN/ethersweep-backups/*
