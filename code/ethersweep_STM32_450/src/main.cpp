@@ -206,6 +206,9 @@ void loop()
       case HEARTBEAT:
         motor.sendHeartbeat(sensorDestinationIp, sensorPort, messenger, Udp);
         break;
+      case IDENTIFY:
+        motor.identify(sensorDestinationIp, sensorPort, messenger, Udp);
+        break;
       case POWERCYCLE:
         motor.powerCycleMotor();
         break;

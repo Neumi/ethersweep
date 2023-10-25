@@ -1,5 +1,7 @@
 #include "Motor.h"
 #include <ArduinoJson.h>
+#include "Configuration.h"
+
 
 
 
@@ -220,6 +222,7 @@ void Motor::sensorFeedback(IPAddress ip, int port, Messenger messenger, Ethernet
     jsonDoc["jobState"] = this->sensor->getJobState();
     jsonDoc["angle"] = this->sensor->getAngle();
     jsonDoc["voltage"] = this->sensor->getVoltage();
+    jsonDoc["version"] = version;
 
     String message;
     serializeJson(jsonDoc, message);
@@ -231,7 +234,7 @@ void Motor::sensorFeedback(IPAddress ip, int port, Messenger messenger, Ethernet
 
 // sends sensor data to ip, port
 void Motor::sendHeartbeat(IPAddress ip, int port, Messenger messenger, EthernetUDP udp) {
-    
+
     DynamicJsonDocument jsonDoc(32);
 
     // Populate JSON object with sensor data
@@ -242,6 +245,37 @@ void Motor::sendHeartbeat(IPAddress ip, int port, Messenger messenger, EthernetU
 
     // sends UDP message
     messenger.sendUDPMessage(ip, port, message, udp);
+
+}
+
+// sends sensor data to ip, port
+void Motor::identify(IPAddress ip, int port, Messenger messenger, EthernetUDP udp) {
+
+    DynamicJsonDocument jsonDoc(32);
+
+    // Populate JSON object with sensor data
+    jsonDoc["response"] = "ok";
+    this->identifyMotor(1);
+    String message;
+    serializeJson(jsonDoc, message);
+
+    // sends UDP message
+    messenger.sendUDPMessage(ip, port, message, udp);
+
+}
+
+void Motor::identifyMotor(bool sound) {
+    for (size_t i = 0; i < 4; i++)
+    {
+        digitalWrite(this->ledPin, HIGH);
+        if(sound) {
+            driveMotor(500, 20, 1, 8, 0);
+            driveMotor(500, 20, 0, 8, 0);
+        }
+        delay(40);
+        digitalWrite(this->ledPin, LOW);
+        delay(10);
+    }
 
 }
 
