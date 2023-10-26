@@ -7,3 +7,4 @@ electronic_design/development/ethersweep406/ethersweep-backups/*.zip
 .idea/
 code/ethersweep_STM32_450/.vscode/
 electronic_design/development/ethersweep407_CAN/ethersweep-backups/*
+electronic_design/production/ethersweep405/.DS_Store
