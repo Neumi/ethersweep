@@ -1,6 +1,6 @@
 #include <Arduino.h>
-#include <EEPROM.h>
 #include "Connection.h"
+#include <EEPROM.h>
 
 
 Connection::Connection(byte randomSeedPin)
@@ -14,13 +14,14 @@ bool Connection::checkMacAddress()
     for (int i = 1; i <= 5; i++)
     {
         byte EEPROMvalue = EEPROM.read(i);
+        Serial1.println(EEPROMvalue);
         this->mac[i] = EEPROMvalue;
         if (EEPROMvalue != 255)
         {
             this->macUnwritten = false;
         }
     }
-
+    
     return this->macUnwritten;
 }
 

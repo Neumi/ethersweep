@@ -6,6 +6,8 @@
 #include <IPAddress.h>
 #include <ArduinoJson.h>
 #include <Wire.h>
+#include <EEPROM.h>
+#include "Configurator.h"
 #include "SSD1306Ascii.h"
 #include "SSD1306AsciiWire.h"
 #include "Configuration.h"
@@ -33,7 +35,7 @@ Connection connection(RANDOM_SEED_PIN);
 Display display(&sensorManager, &oled, &connection);
 Motor motor(&sensorManager, &display, STEP_PIN, DIR_PIN, ENABLE_PIN, M0_PIN, M1_PIN, LED_PIN);
 Messenger messenger(&Serial1);
-
+Configurator configurator;
 
 int action = 0;
 int motorSpeed = 0;
@@ -49,11 +51,21 @@ int sensorPort = STANDARD_REMOTE_SENSOR_PORT;
 
 bool usbActive = false;
 
-unsigned long previousMillis;
+unsigned long previousDisplayMillis;
+unsigned long previousNetworkMillis;
+unsigned long previousSensorMillis;
+unsigned long previousMotorMillis;
+unsigned long previousFeedbackMillis;
+
+int displayRefreshTime;
+int feedbackTime;
 
 // ETHERNET & UDP
 char packetBuffer[BUFFER_SIZE]; // buffer to hold incoming UDP packet
 StaticJsonDocument<BUFFER_SIZE> doc;
+
+int schedulerMode = 0;
+
 
 void setup()
 {
@@ -61,8 +73,13 @@ void setup()
 
   connection.setConnectionMode(connectionMode);
   messenger.init(BAUD_SPEED);
+  configurator.loadData();
+
+  displayRefreshTime = configurator.getDisplayRefreshTime();
+  feedbackTime = configurator.getFeedbackTime();
+
   messenger.sendInfo("Ethersweep " + version);
-  
+
   if (sensorManager.startUpCheck(messenger))
   {
     messenger.sendInfo(F("Sensors OK"));
@@ -126,6 +143,16 @@ void setup()
 
 void loop()
 {
+  if(schedulerMode == standby) 
+  {
+  }
+  else if (schedulerMode == drive)
+  {
+  }
+  else if (schedulerMode == feedback)
+  {
+  }
+
   sensorManager.getEmergencyStopState();
   sensorManager.getEndStopState();
 
@@ -147,10 +174,10 @@ void loop()
     }
   }
 
-  if (millis() - previousMillis >= DISPLAY_REFRESH_TIME)
+  if (millis() - previousDisplayMillis >= displayRefreshTime)
   {
     display.drawDisplay();
-    previousMillis = millis();
+    previousDisplayMillis = millis();
   }
 
   if (!sensorManager.getJobState())
@@ -208,6 +235,9 @@ void loop()
         break;
       case IDENTIFY:
         motor.identify(sensorDestinationIp, sensorPort, messenger, Udp);
+        break;
+      case CONFIGURE:
+        //
         break;
       case POWERCYCLE:
         motor.powerCycleMotor();

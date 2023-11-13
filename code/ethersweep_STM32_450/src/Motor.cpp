@@ -232,7 +232,7 @@ void Motor::sensorFeedback(IPAddress ip, int port, Messenger messenger, Ethernet
 
 }
 
-// sends sensor data to ip, port
+// sends heartbeat data to ip, port
 void Motor::sendHeartbeat(IPAddress ip, int port, Messenger messenger, EthernetUDP udp) {
 
     DynamicJsonDocument jsonDoc(32);

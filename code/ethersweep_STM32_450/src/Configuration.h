@@ -14,11 +14,12 @@ const String version = "3.5.2"; // software version
 
 #define BUFFER_SIZE 256 // communication buffer size
 
-#define DISPLAY_REFRESH_TIME 100 // milliseconds until new data is shown
-
 #define LOCAL_PORT 8888 // local UDP port
 
 #define STANDARD_REMOTE_SENSOR_PORT 5000 // remote machines receiving UDP port
+
+#define DEFAULT_DISPLAY_REFRESH_TIME 100 // milliseconds until new data is shown
+#define DEFAULT_FEEDBACK_TIME 300 // milliseconds until hearbeat
 
 
 // action definitions
@@ -30,6 +31,12 @@ const String version = "3.5.2"; // software version
 #define SENSORFEEDBACK 5 // sends sensor values to IP and PORT
 #define HEARTBEAT 6 // sends heartbeat answer values to IP and PORT
 #define IDENTIFY 7 // sends IDENTIFY answer values to IP and PORT
+#define CONFIGURE 8 // receives and saves configuration data
+
+// scheduler modes
+#define standby 0 // waiting for instructions
+#define drive 1 // running drive loop
+#define feedback 2 // feedback and hearbeat to host
 
 // W5500 ethernet chip
 #define SLEEP_PIN PB0 // ethernet int
