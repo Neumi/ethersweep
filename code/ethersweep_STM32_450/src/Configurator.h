@@ -12,18 +12,23 @@ private:
     int displayRefreshTime;
 
     int feedbackTime;
+    
+    void readData();
+    void saveData();
+    void getFullEEPROM();
+    void factoryConfiguration();
 
+    void setDisplayRefreshTime(int value);
+    void setFeedbackTime(int value);
+    
 public:
     Configurator();
-    void readData();
+
     void loadData();
-    void saveData();
-    void factoryConfiguration();
-    void getFullEEPROM();
-
+    
+    void processNewConfiguration();
+    
     int getDisplayRefreshTime();
-    void setDisplayRefreshTime(int value);
-
     int getFeedbackTime();
-    void setFeedbackTime(int value);
+    
 };

@@ -17,6 +17,11 @@ Configurator::Configurator() {
 
 }
 
+void Configurator::processNewConfiguration() {
+
+    
+}
+
 void Configurator::readData() {
     isConfigured = EEPROM.read(configurationStartAddress) == 1;
     displayRefreshTime = EEPROM.read(displayRefreshTimeAddress) | (EEPROM.read(displayRefreshTimeAddress + 1) << 8);

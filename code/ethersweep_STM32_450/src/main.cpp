@@ -74,10 +74,10 @@ void setup()
   connection.setConnectionMode(connectionMode);
   messenger.init(BAUD_SPEED);
   configurator.loadData();
-
+  
   displayRefreshTime = configurator.getDisplayRefreshTime();
   feedbackTime = configurator.getFeedbackTime();
-
+  
   messenger.sendInfo("Ethersweep " + version);
 
   if (sensorManager.startUpCheck(messenger))
@@ -189,6 +189,20 @@ void loop()
     }
     else
     {
+        /**
+         * data scheme 
+          {
+          "mode": "configuration",
+            "action": {
+              "displayRefresh": 50,
+              "feedbackTime": 200,
+              "connectionMode": "wifi"
+            },
+            "executionTime": 1636986000000000
+          }
+         * 
+        */
+
       action = doc["mode"];
       motorSteps = doc["steps"];
       motorSpeed = doc["speed"];
@@ -237,7 +251,7 @@ void loop()
         motor.identify(sensorDestinationIp, sensorPort, messenger, Udp);
         break;
       case CONFIGURE:
-        //
+        configurator.processNewConfiguration();
         break;
       case POWERCYCLE:
         motor.powerCycleMotor();
