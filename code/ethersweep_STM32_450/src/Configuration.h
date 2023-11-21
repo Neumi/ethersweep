@@ -38,8 +38,8 @@ const String version = "3.5.2"; // software version
 #define drive 1 // running drive loop
 #define feedback 2 // feedback and hearbeat to host
 
-// W5500 ethernet chip
-#define SLEEP_PIN PB0 // ethernet int
+// W5500 ethernet chip 
+#define ETHERNET_INTER_PIN PB0 // ethernet int
 #define RESET_PIN PA1 // ethernet reset
 #define CS_PIN PB9 // ethernet chip select
 

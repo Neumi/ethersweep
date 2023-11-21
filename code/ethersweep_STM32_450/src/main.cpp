@@ -17,6 +17,8 @@
 #include "Display.h"
 #include "Messenger.h"
 
+#include "w5100int_datasheet.h"
+
 
 #if STATIC_IP
 String connectionMode = CONNECTION_STAT;
@@ -67,6 +69,87 @@ StaticJsonDocument<BUFFER_SIZE> doc;
 int schedulerMode = 0;
 
 
+
+// w5500 interrupt
+volatile int SIRflag = 0;
+
+void clearSIRs() { // After a socket IR, SnIR and SIR need to be reset
+  for (int i = 0; i < 8; i++) {
+    delay(1);
+    W5100.writeSnIR(i, 0xFF); // Clear socket i interrupt
+  }
+  delay(1);
+  W5100.writeSIR(0xFF); // Clear SIR
+}
+
+// disable interrupts for all sockets
+inline void disableSIRs() {
+  delay(1);
+  W5100.writeSIMR(0x00);
+}
+
+// enable interrupts for all sockets
+inline void enableSIRs() {
+  delay(1);
+  W5100.writeSIMR(0xFF);
+}
+
+// Interrupt service routine
+void socketISR()
+{
+  SIRflag++;
+}
+
+void printIRstate() {
+  // Conflict/Unreach/PPPoE/MP interrupt register (not used here):
+  //  Serial.print("IR:");
+  //  Serial.print(W5100.readIR(),HEX);
+  //  Serial.print(" IMR:");
+  //  Serial.print(W5100.readIMR(),HEX);
+  // Socket IR registers:
+  Serial1.print("SIR:");
+  Serial1.print(W5100.readSIR(), HEX);
+  delay(1);
+  Serial1.print(" SIMR:");
+  Serial1.print(W5100.readSIMR(), HEX);
+  delay(1);
+  Serial1.print(" SnIR:");
+  for (int i = 0; i < 7; i++) {
+    delay(1);
+    Serial1.print(W5100.readSnIR(i), HEX);
+    Serial1.print(",");
+  }
+  delay(1);
+  Serial1.print(W5100.readSnIR(7), HEX);
+  Serial1.print(" SnIMR:");
+  for (int i = 0; i < 7; i++) {
+    delay(1);
+    Serial1.print(W5100.readSnIMR(i), HEX);
+    Serial1.print(",");
+  }
+  delay(1);
+  Serial1.print(W5100.readSnIMR(7), HEX);
+  // State of the INTn line:
+  Serial1.print(" INTn:");
+  Serial1.println(digitalRead(ETHERNET_INTER_PIN));
+}
+
+void receiveAll() { // Receive ethernet data and print it to serial
+  /*
+  EthernetClient client = server.available();
+  while (client) {
+    Serial.println("Client available");
+    while (client.available() > 0) {
+      Serial.print(client.read(), HEX);
+    }
+    client = server.available();
+  }
+  */
+  Serial1.println("interrupt triggered from W5500!!!");
+}
+
+
+
 void setup()
 {
   Wire.begin();
@@ -74,11 +157,42 @@ void setup()
   connection.setConnectionMode(connectionMode);
   messenger.init(BAUD_SPEED);
   configurator.loadData();
+  connection.getMac();
+  display.setupDisplay();
+  motor.disableMotor();
   
+  Serial1.setTimeout(10);
+  
+
   displayRefreshTime = configurator.getDisplayRefreshTime();
   feedbackTime = configurator.getFeedbackTime();
+  Serial1.println("Ethersweep " + version);
+
+  Serial1.println("init start");
+  pinMode(RESET_PIN, OUTPUT);
+  digitalWrite(RESET_PIN, LOW);
+  delay(2);
+  digitalWrite(RESET_PIN, HIGH);
   
-  messenger.sendInfo("Ethersweep " + version);
+  // w5500 interrupt
+  pinMode(ETHERNET_INTER_PIN, INPUT);
+  Serial1.print("Read INTn pin:");
+  Serial1.println(digitalRead(ETHERNET_INTER_PIN));
+  Serial1.print("Register states before enabling IRs: "); printIRstate();
+  
+  for (int i = 0; i < 8; i++) {
+    W5100.writeSnIMR(i, 0x04); // Socket IR mask: RECV for all sockets
+  }
+  enableSIRs();
+
+  Serial1.print("Register states after  enabling IRs: "); printIRstate();
+
+  attachInterrupt(digitalPinToInterrupt(ETHERNET_INTER_PIN), socketISR, FALLING); // For some reason, SocketISR gets called by this line...
+  SIRflag = 0; // ...therefore, we reset it
+
+  
+  
+  
 
   if (sensorManager.startUpCheck(messenger))
   {
@@ -89,11 +203,7 @@ void setup()
     messenger.sendError(F("Sensor fail"));
   }
 
-  connection.getMac();
-  display.setupDisplay();
-  motor.disableMotor();
-
-  Serial1.setTimeout(10);
+  
 
   if (Serial1.available() > 0)
   {
@@ -189,19 +299,7 @@ void loop()
     }
     else
     {
-        /**
-         * data scheme 
-          {
-          "mode": "configuration",
-            "action": {
-              "displayRefresh": 50,
-              "feedbackTime": 200,
-              "connectionMode": "wifi"
-            },
-            "executionTime": 1636986000000000
-          }
-         * 
-        */
+        
 
       action = doc["mode"];
       motorSteps = doc["steps"];

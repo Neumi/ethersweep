@@ -18,7 +18,6 @@ Configurator::Configurator() {
 }
 
 void Configurator::processNewConfiguration() {
-
     
 }
 
