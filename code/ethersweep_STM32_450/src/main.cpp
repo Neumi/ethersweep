@@ -174,22 +174,7 @@ void setup()
   delay(2);
   digitalWrite(RESET_PIN, HIGH);
   
-  // w5500 interrupt
-  pinMode(ETHERNET_INTER_PIN, INPUT);
-  Serial1.print("Read INTn pin:");
-  Serial1.println(digitalRead(ETHERNET_INTER_PIN));
-  Serial1.print("Register states before enabling IRs: "); printIRstate();
   
-  for (int i = 0; i < 8; i++) {
-    W5100.writeSnIMR(i, 0x04); // Socket IR mask: RECV for all sockets
-  }
-  enableSIRs();
-
-  Serial1.print("Register states after  enabling IRs: "); printIRstate();
-
-  attachInterrupt(digitalPinToInterrupt(ETHERNET_INTER_PIN), socketISR, FALLING); // For some reason, SocketISR gets called by this line...
-  SIRflag = 0; // ...therefore, we reset it
-
   
   
   
@@ -213,6 +198,13 @@ void setup()
   else
   {
     Ethernet.init(CS_PIN);
+
+  // w5500 interrupt
+  pinMode(ETHERNET_INTER_PIN, INPUT);
+  Serial1.print("Read INTn pin:");
+  Serial1.println(digitalRead(ETHERNET_INTER_PIN));
+
+  
 #if STATIC_IP
     Ethernet.begin(connection.mac, ip);
     if (Ethernet.hardwareStatus() == EthernetNoHardware)
@@ -244,6 +236,24 @@ void setup()
 #endif
     Udp.begin(LOCAL_PORT);
   }
+  Serial1.print("Hardware: ");
+  Serial1.println(Ethernet.hardwareStatus());
+
+
+  Serial1.print("Register states before enabling IRs: "); printIRstate();
+  
+  for (int i = 0; i < 8; i++) {
+    delay(1);
+    W5100.writeSnIMR(i, 0x04); // Socket IR mask: RECV for all sockets
+  }
+  enableSIRs();
+
+  Serial1.print("Register states after  enabling IRs: "); printIRstate();
+
+  attachInterrupt(digitalPinToInterrupt(ETHERNET_INTER_PIN), socketISR, FALLING); // For some reason, SocketISR gets called by this line...
+  SIRflag = 0; // ...therefore, we reset it
+  
+
 
   display.initializeDisplay(Ethernet.localIP());
 
@@ -299,7 +309,7 @@ void loop()
     }
     else
     {
-        
+
 
       action = doc["mode"];
       motorSteps = doc["steps"];
@@ -308,6 +318,7 @@ void loop()
       motorDirection = doc["direction"];
       motorStepMode = doc["stepmode"];
       motorHold = doc["hold"];
+      Serial1.println(action);
 
       if (doc.containsKey("degrees")) {
         degrees = doc["degrees"];
@@ -328,16 +339,16 @@ void loop()
       switch (action)
       {
       case STEPS:
-        motor.driveMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
+        //motor.driveMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
         break;
       case HOME:
-        motor.homeMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
+        //motor.homeMotor(motorSteps, motorSpeed, motorDirection, motorStepMode, motorHold);
         break;
       case RAMP:
-        motor.rampMotor(motorSteps, motorSpeed, motorSlope, motorDirection, motorStepMode, motorHold);
+        //motor.rampMotor(motorSteps, motorSpeed, motorSlope, motorDirection, motorStepMode, motorHold);
         break;
       case POSITION:
-        motor.positionMotor(degrees);
+        //motor.positionMotor(degrees);
         break;
       case SENSORFEEDBACK:
         motor.sensorFeedback(sensorDestinationIp, sensorPort, messenger, Udp);
@@ -346,7 +357,7 @@ void loop()
         motor.sendHeartbeat(sensorDestinationIp, sensorPort, messenger, Udp);
         break;
       case IDENTIFY:
-        motor.identify(sensorDestinationIp, sensorPort, messenger, Udp);
+        //motor.identify(sensorDestinationIp, sensorPort, messenger, Udp);
         break;
       case CONFIGURE:
         configurator.processNewConfiguration();
