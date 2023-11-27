@@ -3,7 +3,7 @@
 # Ethersweep
 ### An Open Source Ethernet controllable stepper motor. Easy interfacing with JSON and UDP from any device on the network in any language you choose.
 
-*As there is quite some interest in buying a controller, please contact me via ethersweep@inprocess.xyz. But you can, of course, order the parts on your own and build the controller yourself! (please see https://hackaday.io/project/187187/components)*
+*As there is quite some interest in buying a controller, please fill out this form to help me better understand what Ethersweep would be used for https://forms.gle/FLgfvCP1hjCCp2636*
 
 More media/press material:
 https://drive.google.com/drive/folders/1qrk8QeEkzJ8hkr-H0x3y7xxhLTKhMb_F?usp=share_link
