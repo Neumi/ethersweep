@@ -2,7 +2,7 @@
 
 const String version = "3.5.2"; // software version
 
-#define STATIC_IP 0 // when set 1, DHCP is enabled, when 0, statis IP is used
+#define STATIC_IP 1 // when set 1, DHCP is enabled, when 0, statis IP is used
 
 #define DEBUG_MODE 1 // when set 1, debugging output is enabled
 
@@ -35,8 +35,8 @@ const String version = "3.5.2"; // software version
 
 // scheduler modes
 #define standby 0 // waiting for instructions
-#define drive 1 // running drive loop
-#define feedback 2 // feedback and hearbeat to host
+#define running 1 // running drive loop
+
 
 // W5500 ethernet chip
 #define SLEEP_PIN PB0 // ethernet int

@@ -16,11 +16,12 @@
 #include "Motor.h"
 #include "Display.h"
 #include "Messenger.h"
+#include "InstructionProcessor.h"
 
 
 #if STATIC_IP
 String connectionMode = CONNECTION_STAT;
-IPAddress ip(192, 168, 1, 111); // static IP
+IPAddress ip(192, 168, 2, 111); // static IP
 #else
 String connectionMode = CONNECTION_DHCP;
 IPAddress ip(0, 0, 0, 0);
@@ -29,6 +30,8 @@ IPAddress ip(0, 0, 0, 0);
 SSD1306AsciiWire oled;
 AMS_5600 ams5600;
 EthernetUDP Udp;
+StaticJsonDocument<BUFFER_SIZE> doc;
+
 
 SensorManager sensorManager(&ams5600, E_STOP_PIN, END_STOP_PIN, DIAG_PIN, FAULT_PIN, VOLT_DETECT_PIN);
 Connection connection(RANDOM_SEED_PIN);
@@ -36,6 +39,7 @@ Display display(&sensorManager, &oled, &connection);
 Motor motor(&sensorManager, &display, STEP_PIN, DIR_PIN, ENABLE_PIN, M0_PIN, M1_PIN, LED_PIN);
 Messenger messenger(&Serial1);
 Configurator configurator;
+InstructionProcessor instructionProcessor(&doc);
 
 int action = 0;
 int motorSpeed = 0;
@@ -62,9 +66,9 @@ int feedbackTime;
 
 // ETHERNET & UDP
 char packetBuffer[BUFFER_SIZE]; // buffer to hold incoming UDP packet
-StaticJsonDocument<BUFFER_SIZE> doc;
 
-int schedulerMode = 0;
+
+int schedulerState = 0;
 
 
 void setup()
@@ -141,44 +145,38 @@ void setup()
   messenger.sendInfo(F("done"));
 }
 
+
+bool waiting = false;
+
 void loop()
 {
-  if(schedulerMode == standby) 
-  {
-  }
-  else if (schedulerMode == drive)
-  {
-  }
-  else if (schedulerMode == feedback)
-  {
-  }
-
-  sensorManager.getEmergencyStopState();
-  sensorManager.getEndStopState();
-
-  if (usbActive)
-  {
-    if (Serial.available() > 0)
-    {
-      Serial.readStringUntil('\n').toCharArray(packetBuffer, BUFFER_SIZE);
-      sensorManager.setJobState(false);
-    }
-  }
-  else
-  {
-    int packetSize = Udp.parsePacket();
-    if (packetSize)
-    {
-      Udp.read(packetBuffer, BUFFER_SIZE);
-      sensorManager.setJobState(false);
-    }
-  }
-
   if (millis() - previousDisplayMillis >= displayRefreshTime)
   {
     display.drawDisplay();
     previousDisplayMillis = millis();
   }
+
+  if(schedulerState == standby) // waits for command from NETWORK or USB
+  {
+    int packetSize = Udp.parsePacket();
+    if (packetSize) // packet is detected
+    {
+      Udp.read(packetBuffer, BUFFER_SIZE);
+      //sensorManager.setJobState(false);
+    }
+  }
+  if (schedulerState == running) // runs drive or feedback or wait loop
+  {
+    if(waiting) { // waiting for time to be reached to run command
+    }
+    else {
+      
+    }
+    
+  }
+
+  sensorManager.getEmergencyStopState();
+  sensorManager.getEndStopState();
 
   if (!sensorManager.getJobState())
   {
@@ -190,15 +188,16 @@ void loop()
     else
     {
         /**
-         * data scheme 
+         * NEW data scheme 
           {
           "mode": "configuration",
-            "action": {
+            "action": "read",
+            "data": {
               "displayRefresh": 50,
               "feedbackTime": 200,
-              "connectionMode": "wifi"
+              "connectionMode": "DHCP"
             },
-            "executionTime": 1636986000000000
+            "executionTime": 0
           }
          * 
         */
@@ -207,6 +206,8 @@ void loop()
       motorSteps = doc["steps"];
       motorSpeed = doc["speed"];
       motorSlope = doc["slope"];
+
+      
       motorDirection = doc["direction"];
       motorStepMode = doc["stepmode"];
       motorHold = doc["hold"];

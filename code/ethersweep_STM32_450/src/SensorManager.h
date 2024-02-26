@@ -7,6 +7,8 @@
 class SensorManager
 {
 private:
+    float absoluteAngle;
+    int absoluteRotations;
     byte eStopPin;
     byte endStopPin;
     byte diagPin;
@@ -31,6 +33,7 @@ public:
     void readSensorValues();
     int getVoltage();
     float getAngle();
+    void refreshAngle();
     bool startUpCheck(Messenger messenger);
     bool checkMagnet();
     bool getEmergencyStopState();

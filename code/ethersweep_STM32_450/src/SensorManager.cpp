@@ -72,14 +72,37 @@ int SensorManager::getVoltage()
     return vin;
 }
 
-float SensorManager::getAngle()
+// reads angle and saves it for later use
+void SensorManager::refreshAngle()
 {
-    float rawAngle = this->ams5600->getRawAngle();
-    
-    /* Raw data reports 0 - 4095 segments, which is 0.087890625 of a degree */
-    float normalizedAngle = (rawAngle * 360.0) / 4096.0;
+    // get last angle
+    float lastAngle = this->absoluteAngle;
 
-    return normalizedAngle;
+    float rawEncoderAngle = this->ams5600->getRawAngle();
+    /* Raw data reports 0 - 4095 segments, which is 0.087890625 of a degree */
+    float normalizedEncoderAngle = (rawEncoderAngle * 360.0) / 4096.0;
+
+    this->absoluteAngle = normalizedEncoderAngle;
+
+    // check if shaft is moving
+    if (lastAngle != normalizedEncoderAngle) {
+        // detect zero crossing
+        if ((lastAngle > 270.0 && normalizedEncoderAngle < 90.0) || (lastAngle < 90.0 && normalizedEncoderAngle > 270.0)) {
+            // Update absolute rotations based on zero crossing
+            if (lastAngle > normalizedEncoderAngle) {
+                this->absoluteRotations++;
+            } else {
+                this->absoluteRotations--;
+            }
+        }
+    }
+}
+
+float SensorManager::getAngle()
+{   
+    this->refreshAngle();
+
+    return this->absoluteRotations * 360.0 + this->absoluteAngle;
 }
 
 bool SensorManager::checkMagnet()

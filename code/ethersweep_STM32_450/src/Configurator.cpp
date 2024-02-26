@@ -19,7 +19,6 @@ Configurator::Configurator() {
 
 void Configurator::processNewConfiguration() {
 
-    
 }
 
 void Configurator::readData() {
